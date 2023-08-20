@@ -4,7 +4,7 @@
 
     <head>
         <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-        <link rel="stylesheet" href="style.css" />
+        <link rel="stylesheet" href="static/style.css" />
         <script defer src="https://pyscript.net/latest/pyscript.js"></script>
         <py-config>
             [splashscreen]
@@ -21,7 +21,7 @@
 
         <h1 class="center">Lesson Name</h1>
         <div class="center">
-            <button id="start_button" hidden class="bigButton" py-click="on_start()" disabled>Start</button>
+            <button id="start_button" class="bigButton" py-click="on_start()" disabled>Start</button>
         </div>
 
         <div id="lesson" class="center">
@@ -41,8 +41,8 @@
             </div>
 
             <div id = "slider template" hidden class = "center slidecontainer">
-                <p></p>
-                <input type="range" min="1" max="100" value="50" class="center slider" id="rangeSlider">
+                <p id = "value display"></p>
+                <input type="range" min="1" max="100" value="50" class="center slider" id="range slider">
             </div>
             
             <py-script>
@@ -55,9 +55,9 @@
             test = document.createElement("p")
             test.value = "hello"
 
-            textContent = ["ID01Section I", "ID00Welcome to Section 1.", "ID02", "ID03Try rereading the text.", "ID04xx1,25"]
+            textContent = ["ID01Section I", "ID00Welcome to Section 1.", "ID02", "ID03Try rereading the text.", "ID04xx1,25", "ID04yy1,25", "ID05xx/yy"]
             
-            widgetsID = {"ID00":"text", "ID01":"title", "ID02":"pause", "ID03":"hint", "ID04":"slider"}
+            widgetsID = {"ID00":"text", "ID01":"title", "ID02":"pause", "ID03":"hint", "ID04":"slider", "ID05":"equation"}
             
             canContinue = False
 
@@ -166,6 +166,7 @@
                         newObj.setAttribute("value", str((int(int(ranges[0])+int(ranges[1]))/2)))
                         newObj.setAttribute("py-change", "slider_changed( '"+str(newSlider.id)+"', '"+str(id)+"')")
                         newSlider.hidden = False
+                        lessonDiv.element.appendChild(document.createElement("p"))
                         lessonDiv.element.appendChild(newSlider)
                     v += 1
 

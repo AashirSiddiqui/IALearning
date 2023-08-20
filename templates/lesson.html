@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+        <link rel="stylesheet" href="style.css" />
+        <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+        <py-config>
+            [splashscreen]
+                enabled = false
+            terminal = false
+            docked = false
+        </py-config>
+
+    </head>
+
+    <body>
+
+        <br>
+
+        <h1 class="center">Lesson Name</h1>
+        <div class="center">
+            <button id="start_button" hidden class="bigButton" py-click="on_start()" disabled>Start</button>
+        </div>
+
+        <div id="lesson" class="center">
+
+            <p hidden id="lessonContent">
+
+                {{ lesson }}
+
+            </p>
+
+            <div id="hint template" hidden class="clickable center hint">                
+                <p></p>
+                <img src="static/hint-icon.png" width="50" height="50" class="side">
+                <p class="side">A hint is hidden here. Click to reveal it.</p>
+                <p class="unselectable transparent" id="hintText">Try rereading.</p>
+
+            </div>
+
+            <div id = "slider template" hidden class = "center slidecontainer">
+                <p></p>
+                <input type="range" min="1" max="100" value="50" class="center slider" id="rangeSlider">
+            </div>
+            
+            <py-script>
+
+            from time import sleep
+            from js import document
+            from pyscript import Element
+            import random
+
+            test = document.createElement("p")
+            test.value = "hello"
+
+            textContent = ["ID01Section I", "ID00Welcome to Section 1.", "ID02", "ID03Try rereading the text.", "ID04xx1,25"]
+            
+            widgetsID = {"ID00":"text", "ID01":"title", "ID02":"pause", "ID03":"hint", "ID04":"slider"}
+            
+            canContinue = False
+
+            values = {}
+
+            lessonDiv = Element("lesson")
+            hintTemp = document.getElementById("hint template")
+            sliderTemp = document.getElementById("slider template")
+
+            ## Parser
+
+            pageContent = []
+            for i in textContent:
+                widget = [0,0]
+                try:
+                    widget[0] = widgetsID[i[0:4]]
+                    i = i[4:]
+                except:
+                    #print("taking prev")
+                    widget[0] = pageContent[len(pageContent)-1][0]
+                widget[1] = i
+                #print(widget)
+                pageContent.append(widget)
+            
+            ## Continue Function
+            def continue_btn():
+                global pageContent
+                #print(pageContent)
+                for i in range(len(pageContent)):
+                    if i <= current_index:
+                        #print(i, ",", current_index)
+                        #print(pageContent[i])
+                        pageContent.pop(0)
+                on_start()
+
+            ## Hint Function
+            def hint_pressed(id):
+                #print("reveal", id)
+                hint = document.getElementById(id)
+                hintText = hint.lastElementChild
+                hintText.setAttribute("class", hintText.getAttribute("class").replace("transparent", ""))
+                hintText.style.color = "#4169e1"
+            
+            ## Slider Function
+            def slider_changed(id, valueid):
+                global values
+                #print("changed")
+                slider = document.getElementById(id)
+                values[valueid] = slider.lastElementChild.value
+                print(slider.lastElementChild.value)
+                print(values)
+
+            ## Displayer
+            current_index = 0
+            current_id = 0
+            clicked_button = Element("start_button").element
+            def on_start():
+                global current_index, current_id, clicked_button, pageContent
+                current_index = 0
+                clicked_button.disabled = True
+                v = 0
+                for i in pageContent:
+                    if i[0] == "text":
+                        text = document.createElement('p')
+                        text.innerHTML = i[1]
+                        #print(text.innerHTML)
+                        lessonDiv.element.append(text)
+                    if i[0] == "title":
+                        text = document.createElement('h3')
+                        text.innerHTML = "<h3>"+i[1]+"</h3>"
+                        #print(text.innerHTML)
+                        lessonDiv.element.append(text)
+                    if i[0] == "pause":
+                        current_index = v
+                        nextBtn = document.createElement('button')
+                        nextBtn.innerHTML = "Continue"
+                        nextBtn.setAttribute('py-click', 'continue_btn()')
+                        lessonDiv.element.append(nextBtn)
+                        clicked_button = nextBtn
+                        break
+                    if i[0] == "hint":
+                        #print(hintTemp.id)
+                        newHint = hintTemp.cloneNode(deep=True)
+                        newHint.id = "Hint "+str(current_id)
+                        current_id += 1
+                        newHint.hidden = False
+                        def specialHint():
+                            hint_pressed(newHint.id)
+                        newHint.setAttribute("py-click", "hint_pressed('"+str(newHint.id)+"')")
+                        lessonDiv.element.appendChild(document.createElement("p"))
+                        lessonDiv.element.appendChild(newHint)
+                        document.getElementById("Hint "+str(current_id-1)).lastElementChild.innerHTML = i[1]
+                        #print(newHint.lastElementChild.innerHTML)
+                    if i[0] == "slider":
+                        id = i[1][0:2]
+                        print(id)
+                        i[1] = i[1].replace(id, "")
+                        print(i[1])
+                        ranges = i[1].split(",")
+                        print(ranges)
+                        newSlider = sliderTemp.cloneNode(deep=True)
+                        newSlider.id = "Slider "+id
+                        newObj = newSlider.lastElementChild
+                        newObj.setAttribute("min", str(ranges[0]))
+                        newObj.setAttribute("max", str(ranges[1]))
+                        newObj.setAttribute("value", str((int(int(ranges[0])+int(ranges[1]))/2)))
+                        newObj.setAttribute("py-change", "slider_changed( '"+str(newSlider.id)+"', '"+str(id)+"')")
+                        newSlider.hidden = False
+                        lessonDiv.element.appendChild(newSlider)
+                    v += 1
+
+            startBtn = Element("start_button").element
+            startBtn.disabled = False
+
+            </py-script>
+
+        </div>
+
+    </body>
+
+</html>

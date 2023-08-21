@@ -5,6 +5,15 @@
     align-self: center;
     text-align: center;
 }
+.small {
+    font-size: small;
+}
+.italic {
+    font-style: italic;
+}
+.bold {
+    font-weight: 600;
+}
 .bigButton {
     font-size: larger;
 }
@@ -17,9 +26,15 @@
     width: 45%;
     height: min-content;
     border: 2px solid rgb(159, 159, 159);
-    border-radius: 20px;
     padding-left: 10px;
     padding-right: 10px;
+}
+.bordered {
+    border: 2px solid rgb(0, 0, 0);
+    border-radius: 20px;
+}
+.equation {
+    width:30%;
 }
 .transparent {
     color: transparent;

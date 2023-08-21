@@ -1,6 +1,5 @@
 .center {
     margin:auto;
-    width:50%;
     align-items: center;
     align-self: center;
     text-align: center;
@@ -23,7 +22,7 @@
     vertical-align: middle;
 }
 .hint {
-    width: 45%;
+    width: 25%;
     height: min-content;
     border: 2px solid rgb(159, 159, 159);
     padding-left: 10px;
@@ -34,7 +33,15 @@
     border-radius: 20px;
 }
 .equation {
-    width:30%;
+    width:fit-content;
+    padding-left: 1%;
+    padding-right: 1%;
+}
+.entry {
+    width:fit-content;
+    padding-bottom: 1%;
+    padding-left: 1%;
+    padding-right: 1%;
 }
 .transparent {
     color: transparent;
@@ -55,13 +62,13 @@
     user-select: none;
 }
 .slidecontainer {
-    width: 40%;
+    width: 25%;
 }
 
 .slider {
     -webkit-appearance: none;
     appearance: none;
-    width: 100%;
+    width: 87%;
     height: 15px;
     background: #d3d3d3;
     outline: none;

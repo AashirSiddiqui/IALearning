@@ -40,181 +40,210 @@
 
             </div>
 
-            <div id = "slider template" hidden class = "center slidecontainer">
-                <p id = "value display"></p>
+            <div id = "slider template" hidden class = "bordered center slidecontainer">
+                <p id = "value display" class = "italic small"></p>
                 <input type="range" min="1" max="100" value="50" class="center slider" id="range slider">
             </div>
 
-            <p></p>
-            <div id = "equation template" class = 'bordered center'>
+            <div id = "equation template" hidden class = 'bordered center equation'>
                 <p class="italic small">a * b</p>
                 <p class="bold">26</p>
+            </div>
+
+            <p></p>
+            <div id = "numEntry template" class = 'bordered center entry'>
+                <p class = "italic small">(aa)</p>
+                <input type="number" class="center">
             </div>
             
             <py-script>
 
-            from time import sleep
-            from js import document
-            from pyscript import Element
-            import random
+                from time import sleep
+                from js import document
+                from pyscript import Element
+                import random
 
-            test = document.createElement("p")
-            test.value = "hello"
+                test = document.createElement("p")
+                test.value = "hello"
 
-            textContent = ["ID01Section I", "ID00Welcome to Section 1.", "ID02", "ID03Try rereading the text.", "ID04xx1,25", "ID04yy1,25", "ID05xx / yy"]
-            
-            widgetsID = {"ID00":"text", "ID01":"title", "ID02":"pause", "ID03":"hint", "ID04":"slider", "ID05":"equation"}
-            
-            canContinue = False
+                textContent = ["ID01Section I", "ID00Welcome to Section 1.", "ID02", "ID03Try rereading the text.", "ID04xx1,25", "ID06yy1,25", "ID05xx / yy", "ID05xx * yy"]
+                
+                widgetsID = {"ID00":"text", "ID01":"title", "ID02":"pause", "ID03":"hint", "ID04":"slider", "ID05":"equation", "ID06":"numEntry"}
+                
+                canContinue = False
 
-            values = {}
-            outputs = {}
-            equations = {}
-            
-            operators = ["/", "*", "+", "-", "**", "(", ")", "%"]
+                values = {}
+                outputs = {}
+                equations = {}
+                
+                operators = ["/", "*", "+", "-", "**", "(", ")", "%"]
 
-            lessonDiv = Element("lesson")
-            hintTemp = document.getElementById("hint template")
-            sliderTemp = document.getElementById("slider template")
-            equationTemp = document.getElementById("equation template")
+                lessonDiv = Element("lesson")
+                hintTemp = document.getElementById("hint template")
+                sliderTemp = document.getElementById("slider template")
+                equationTemp = document.getElementById("equation template")
+                numEntryTemp = document.getElementById("numEntry template")
 
-            ## Parser
+                ## Parser
 
-            pageContent = []
-            for i in textContent:
-                widget = [0,0]
-                try:
-                    widget[0] = widgetsID[i[0:4]]
-                    i = i[4:]
-                except:
-                    #print("taking prev")
-                    widget[0] = pageContent[len(pageContent)-1][0]
-                widget[1] = i
-                #print(widget)
-                pageContent.append(widget)
-            
-            ## Continue Function
-            def continue_btn():
-                global pageContent
-                #print(pageContent)
-                for i in range(len(pageContent)):
-                    if i <= current_index:
-                        #print(i, ",", current_index)
-                        #print(pageContent[i])
-                        pageContent.pop(0)
-                on_start()
+                pageContent = []
+                for i in textContent:
+                    widget = [0,0]
+                    try:
+                        widget[0] = widgetsID[i[0:4]]
+                        i = i[4:]
+                    except:
+                        #print("taking prev")
+                        widget[0] = pageContent[len(pageContent)-1][0]
+                    widget[1] = i
+                    #print(widget)
+                    pageContent.append(widget)
+                
+                ## Continue Function
+                def continue_btn():
+                    global pageContent
+                    #print(pageContent)
+                    for i in range(len(pageContent)):
+                        if i <= current_index:
+                            #print(i, ",", current_index)
+                            #print(pageContent[i])
+                            pageContent.pop(0)
+                    on_start()
 
-            ## Hint Function
-            def hint_pressed(id):
-                #print("reveal", id)
-                hint = document.getElementById(id)
-                hintText = hint.lastElementChild
-                hintText.setAttribute("class", hintText.getAttribute("class").replace("transparent", ""))
-                hintText.style.color = "#4169e1"
-            
-            ## Slider + Equation Function
-            def slider_changed(id, valueid):
-                global values, equations
-                slider = document.getElementById(id)
-                values[valueid] = slider.lastElementChild.value
-                slider.firstElementChild.innerHTML = "("+str(valueid)+") " + str(values[valueid])
-                present = []
-                for i in outputs:
-                    if valueid in i:
-                        equations[i][valueid] = values[valueid]
-                        print(equations)
-                        complete = True
-                        for v in equations[i]:
-                            if v not in operators:
-                                if type(equations[i][v]) != type('1'):
-                                    print("not complete")
-                                    complete = False
-                                    break
-                        if complete == True:
-                            equation = document.getElementById(outputs[i])
-                            eqString = ""
+                ## Hint Function
+                def hint_pressed(id):
+                    #print("reveal", id)
+                    hint = document.getElementById(id)
+                    hintText = hint.lastElementChild
+                    hintText.setAttribute("class", hintText.getAttribute("class").replace("transparent", ""))
+                    hintText.style.color = "#4169e1"
+                
+                ## Slider + Equation Function
+                def slider_changed(id, valueid):
+                    global values, equations
+                    slider = document.getElementById(id)
+                    if "Entry" in id:
+                        print("entry ", slider.lastElementChild.value)
+                        if int(slider.lastElementChild.value) > int(slider.lastElementChild.getAttribute("max")):
+                            slider.lastElementChild.value = slider.lastElementChild.getAttribute("max")
+                        elif int(slider.lastElementChild.value) < int(slider.lastElementChild.getAttribute("min")):
+                            slider.lastElementChild.value = sldier.lastElementChild.getAttribute("min")
+                    values[valueid] = slider.lastElementChild.value
+                    slider.firstElementChild.innerHTML = "("+str(valueid)+") " + str(values[valueid])
+                    present = []
+                    for i in outputs:
+                        if valueid in i:
+                            equations[i][valueid] = values[valueid]
+                            print(equations)
+                            complete = True
                             for v in equations[i]:
-                                print(v)
-                                if v in operators:
-                                    eqString += str(v)
-                                else:
-                                    eqString += equations[i][v]
-                            equation.lastElementChild.innerHTML = eval(eqString)
+                                if v not in operators:
+                                    if type(equations[i][v]) != type('1'):
+                                        print("not complete")
+                                        complete = False
+                                        break
+                            if complete == True:
+                                equation = document.getElementById(outputs[i])
+                                eqString = ""
+                                for v in equations[i]:
+                                    print(v)
+                                    if v in operators:
+                                        eqString += str(v)
+                                    else:
+                                        eqString += equations[i][v]
+                                equation.lastElementChild.innerHTML = round(eval(eqString), 2)
+                    print(values)
 
-            ## Displayer
-            current_index = 0
-            current_id = 0
-            clicked_button = Element("start_button").element
-            def on_start():
-                global current_index, current_id, clicked_button, pageContent
+                ## Displayer
                 current_index = 0
-                clicked_button.disabled = True
-                v = 0
-                for i in pageContent:
-                    if i[0] == "text":
-                        text = document.createElement('p')
-                        text.innerHTML = i[1]
-                        #print(text.innerHTML)
-                        lessonDiv.element.append(text)
-                    if i[0] == "title":
-                        text = document.createElement('h3')
-                        text.innerHTML = "<h3>"+i[1]+"</h3>"
-                        #print(text.innerHTML)
-                        lessonDiv.element.append(text)
-                    if i[0] == "pause":
-                        current_index = v
-                        nextBtn = document.createElement('button')
-                        nextBtn.innerHTML = "Continue"
-                        nextBtn.setAttribute('py-click', 'continue_btn()')
-                        lessonDiv.element.append(nextBtn)
-                        clicked_button = nextBtn
-                        break
-                    if i[0] == "hint":
-                        #print(hintTemp.id)
-                        newHint = hintTemp.cloneNode(deep=True)
-                        newHint.id = "Hint "+str(current_id)
-                        current_id += 1
-                        newHint.hidden = False
-                        def specialHint():
-                            hint_pressed(newHint.id)
-                        newHint.setAttribute("py-click", "hint_pressed('"+str(newHint.id)+"')")
-                        lessonDiv.element.appendChild(document.createElement("p"))
-                        lessonDiv.element.appendChild(newHint)
-                        document.getElementById("Hint "+str(current_id-1)).lastElementChild.innerHTML = i[1]
-                        #print(newHint.lastElementChild.innerHTML)
-                    if i[0] == "slider":
-                        id = i[1][0:2]
-                        #print(id)
-                        i[1] = i[1].replace(id, "")
-                        #print(i[1])
-                        ranges = i[1].split(",")
-                        #print(ranges)
-                        newSlider = sliderTemp.cloneNode(deep=True)
-                        newSlider.id = "Slider "+id
-                        newObj = newSlider.lastElementChild
-                        newObj.setAttribute("min", str(ranges[0]))
-                        newObj.setAttribute("max", str(ranges[1]))
-                        newObj.setAttribute("value", str((int(int(ranges[0])+int(ranges[1]))/2)))
-                        newObj.setAttribute("py-change", "slider_changed( '"+str(newSlider.id)+"', '"+str(id)+"')")
-                        newSlider.hidden = False
-                        lessonDiv.element.appendChild(document.createElement("p"))
-                        lessonDiv.element.appendChild(newSlider)
-                        newSlider.firstElementChild.innerHTML = "("+str(id)+")"
-                    if i[0] == "equation":
-                        newEquation = equationTemp.cloneNode(deep = True)
-                        newEquation.id = "Equation "+str(current_id) 
-                        current_id += 1
-                        outputs[i[1]] = newEquation.id
-                        lessonDiv.element.appendChild(document.createElement("p"))
-                        lessonDiv.element.appendChild(newEquation)
-                        newEquation.firstElementChild.innerHTML = i[1]
-                        newEquation.lastElementChild.innerHTML = "The equation result will be displayed here once you change the inputs."
-                        parsedEquation = i[1].split(" ")
-                        equations[i[1]] = dict.fromkeys(parsedEquation, parsedEquation)
-                    v += 1
+                current_id = 0
+                clicked_button = Element("start_button").element
+                def on_start():
+                    global current_index, current_id, clicked_button, pageContent
+                    current_index = 0
+                    clicked_button.disabled = True
+                    v = 0
+                    for i in pageContent:
+                        if i[0] == "text":
+                            text = document.createElement('p')
+                            text.innerHTML = i[1]
+                            #print(text.innerHTML)
+                            lessonDiv.element.append(text)
+                        if i[0] == "title":
+                            text = document.createElement('h3')
+                            text.innerHTML = "<h3>"+i[1]+"</h3>"
+                            #print(text.innerHTML)
+                            lessonDiv.element.append(text)
+                        if i[0] == "pause":
+                            current_index = v
+                            nextBtn = document.createElement('button')
+                            nextBtn.innerHTML = "Continue"
+                            nextBtn.setAttribute('py-click', 'continue_btn()')
+                            lessonDiv.element.append(nextBtn)
+                            clicked_button = nextBtn
+                            break
+                        if i[0] == "hint":
+                            #print(hintTemp.id)
+                            newHint = hintTemp.cloneNode(deep=True)
+                            newHint.id = "Hint "+str(current_id)
+                            current_id += 1
+                            newHint.hidden = False
+                            def specialHint():
+                                hint_pressed(newHint.id)
+                            newHint.setAttribute("py-click", "hint_pressed('"+str(newHint.id)+"')")
+                            lessonDiv.element.appendChild(document.createElement("p"))
+                            lessonDiv.element.appendChild(newHint)
+                            document.getElementById("Hint "+str(current_id-1)).lastElementChild.innerHTML = i[1]
+                            #print(newHint.lastElementChild.innerHTML)
+                        if i[0] == "slider":
+                            id = i[1][0:2]
+                            #print(id)
+                            i[1] = i[1].replace(id, "")
+                            #print(i[1])
+                            ranges = i[1].split(",")
+                            #print(ranges)
+                            newSlider = sliderTemp.cloneNode(deep=True)
+                            newSlider.id = "Slider "+id
+                            newObj = newSlider.lastElementChild
+                            newObj.setAttribute("min", str(ranges[0]))
+                            newObj.setAttribute("max", str(ranges[1]))
+                            newObj.setAttribute("value", str((int(int(ranges[0])+int(ranges[1]))/2)))
+                            newObj.setAttribute("py-change", "slider_changed( '"+str(newSlider.id)+"', '"+str(id)+"')")
+                            newSlider.hidden = False
+                            lessonDiv.element.appendChild(document.createElement("p"))
+                            lessonDiv.element.appendChild(newSlider)
+                            newSlider.firstElementChild.innerHTML = "("+str(id)+")"
+                        if i[0] == "equation":
+                            newEquation = equationTemp.cloneNode(deep = True)
+                            newEquation.id = "Equation "+str(current_id) 
+                            current_id += 1
+                            outputs[i[1]] = newEquation.id
+                            lessonDiv.element.appendChild(document.createElement("p"))
+                            lessonDiv.element.appendChild(newEquation)
+                            newEquation.firstElementChild.innerHTML = i[1]
+                            newEquation.lastElementChild.innerHTML = "Result"
+                            newEquation.hidden = False
+                            parsedEquation = i[1].split(" ")
+                            equations[i[1]] = dict.fromkeys(parsedEquation, parsedEquation)
+                        if i[0] == "numEntry":
+                            id = i[1][0:2]
+                            i[1] = i[1].replace(id, "")
+                            ranges = i[1].split(",")
+                            newEntry = numEntryTemp.cloneNode(deep=True)
+                            newEntry.id = "Entry "+str(current_id)
+                            current_id += 1
+                            newEntry.hidden = False
+                            lessonDiv.element.appendChild(document.createElement("p"))
+                            lessonDiv.element.appendChild(newEntry)
+                            newEntry.firstElementChild.innerHTML = "("+str(id)+")"
+                            inputObj = newEntry.lastElementChild
+                            inputObj.setAttribute("py-change", "slider_changed( '"+str(newEntry.id)+"', '"+str(id)+"')")
+                            inputObj.setAttribute("min", int(ranges[0]))
+                            inputObj.setAttribute("max", int(ranges[1]))
+                        v += 1
 
-            startBtn = Element("start_button").element
-            startBtn.disabled = False
+                startBtn = Element("start_button").element
+                startBtn.disabled = False
 
             </py-script>
 

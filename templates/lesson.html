@@ -51,11 +51,20 @@
             </div>
 
             <p></p>
-            <div id = "numEntry template" class = 'bordered center entry'>
+            <div id = "numEntry template" hidden class = 'bordered center entry'>
                 <p class = "italic small">(aa)</p>
                 <input type="number" class="center">
             </div>
+
+            <div id = "answerTemp" hidden class = "center" style="width: 50%;">
+                <img src="static/checkmark.png" class="center" width="45" height="45">
+                <p class="center">Correct Answer(s): </p>
+            </div>
+
+            <form id = "quizForm template" hidden></form>
             
+            <div id="quizDiv template" class = "center fitcontent bordered" hidden></div>
+
             <py-script>
 
                 from time import sleep
@@ -66,9 +75,9 @@
                 test = document.createElement("p")
                 test.value = "hello"
 
-                textContent = ["ID01Section I", "ID00Welcome to Section 1.", "ID02", "ID03Try rereading the text.", "ID04xx1,25", "ID06yy1,25", "ID05xx / yy", "ID05xx * yy"]
+                textContent = ["ID01Section I", "ID00Welcome to Section 1.", "ID02", "ID03Try rereading the text.", "ID04xx1,25", "ID06yy1,25", "ID05xx / yy", "ID05xx * yy", "ID07_2What is the answer?|This are the answer|This isn't the answer|This is the answer", "ID00Thank you for completing the quiz."]
                 
-                widgetsID = {"ID00":"text", "ID01":"title", "ID02":"pause", "ID03":"hint", "ID04":"slider", "ID05":"equation", "ID06":"numEntry"}
+                widgetsID = {"ID00":"text", "ID01":"title", "ID02":"pause", "ID03":"hint", "ID04":"slider", "ID05":"equation", "ID06":"numEntry", "ID07":"radioQuiz"}
                 
                 canContinue = False
 
@@ -83,6 +92,17 @@
                 sliderTemp = document.getElementById("slider template")
                 equationTemp = document.getElementById("equation template")
                 numEntryTemp = document.getElementById("numEntry template")
+                radioOptionTemp = document.createElement("input")
+                radioOptionTemp.setAttribute("type", "radio")
+                quizDivTemp = document.getElementById("quizDiv template")
+                quizFormTemp = document.getElementById("quizForm template")
+                answerTemp = document.getElementById("answerTemp")
+
+                class Quiz():
+                    def __init__(self, quizInfo, ids):
+                        self.info = quizInfo
+                        self.IDs = ids
+                        print(self.info)
 
                 ## Parser
 
@@ -118,15 +138,34 @@
                     hintText.setAttribute("class", hintText.getAttribute("class").replace("transparent", ""))
                     hintText.style.color = "#4169e1"
                 
+                ## Quiz Function
+                def submitQuiz(quizObj):
+                    answerIndex = quizObj.info[-1]
+                    quizObj.info = quizObj.info.pop(len(quizObj.info)-1)
+                    print(answerIndex)
+                    print(quizObj.info)
+                    correctAnswer = document.getElementById(quizObj.IDs[int(answerIndex)])
+                    newAnswerMessage = answerTemp.cloneNode(deep=True)
+                    newAnswerMessage.hidden = False
+                    print(correctAnswer.id)
+                    if correctAnswer.checked:
+                        newAnswerMessage.lastElementChild.hidden = True
+                    else:
+                        newAnswerMessage.firstElementChild.src = "static/crossmark.png"
+                        newAnswerMessage.lastElementChild.innerHTML = "Correct Answer(s): "+str(document.getElementById(correctAnswer.id+"label").innerHTML)
+                    lessonDiv.element.appendChild(document.createElement("p"))
+                    lessonDiv.element.appendChild(newAnswerMessage)
+                    continue_btn()
+                
                 ## Slider + Equation Function
                 def slider_changed(id, valueid):
                     global values, equations
                     slider = document.getElementById(id)
                     if "Entry" in id:
                         print("entry ", slider.lastElementChild.value)
-                        if int(slider.lastElementChild.value) > int(slider.lastElementChild.getAttribute("max")):
+                        if float(slider.lastElementChild.value) > int(slider.lastElementChild.getAttribute("max")):
                             slider.lastElementChild.value = slider.lastElementChild.getAttribute("max")
-                        elif int(slider.lastElementChild.value) < int(slider.lastElementChild.getAttribute("min")):
+                        elif float(slider.lastElementChild.value) < int(slider.lastElementChild.getAttribute("min")):
                             slider.lastElementChild.value = sldier.lastElementChild.getAttribute("min")
                     values[valueid] = slider.lastElementChild.value
                     slider.firstElementChild.innerHTML = "("+str(valueid)+") " + str(values[valueid])
@@ -164,6 +203,7 @@
                     clicked_button.disabled = True
                     v = 0
                     for i in pageContent:
+                        print(i)
                         if i[0] == "text":
                             text = document.createElement('p')
                             text.innerHTML = i[1]
@@ -240,6 +280,50 @@
                             inputObj.setAttribute("py-change", "slider_changed( '"+str(newEntry.id)+"', '"+str(id)+"')")
                             inputObj.setAttribute("min", int(ranges[0]))
                             inputObj.setAttribute("max", int(ranges[1]))
+                        if i[0] == "radioQuiz":
+                            correctIndex = i[1][1]
+                            i[1] = i[1].replace("_"+correctIndex, "")
+                            quizInfo = i[1].split("|")
+                            print(quizInfo)
+                            quizDiv = quizDivTemp.cloneNode(deep=True)
+                            question = document.createElement("p")
+                            question.setAttribute("class", "bold_big")
+                            question.innerHTML = quizInfo[0]
+                            quizDiv.hidden = False
+                            quizDiv.append(question)
+                            quizDiv.id = "Quiz "+str(current_id)
+                            current_id += 1
+                            quizInfo.pop(0)
+                            quizObj = Quiz(quizInfo, [quizDiv.id])
+                            ids = []
+                            for x in quizInfo:
+                                optClone = radioOptionTemp.cloneNode(deep=True)
+                                optClone.id = current_id
+                                ids.append(current_id)
+                                current_id += 1
+                                optClone.setAttribute("name", quizInfo[0])
+                                newLabel = document.createElement("label")
+                                newLabel.setAttribute("for", current_id - 1)
+                                newLabel.innerHTML = " " + str(x)
+                                newLabel.id = optClone.id + "label"
+                                quizDiv.append(optClone)
+                                quizDiv.append(newLabel)
+                                quizDiv.append(document.createElement("br"))
+                            submitBtn = document.createElement("button")
+                            submitBtn.id = current_id
+                            ids.append(current_id)
+                            current_id += 1
+                            submitBtn.innerHTML = "Submit"
+                            quizInfo.append(correctIndex)
+                            print(quizInfo)
+                            submitBtn.setAttribute("py-click", "submitQuiz(Quiz("+str(quizInfo)+", "+str(ids)+"))")
+                            quizDiv.append(submitBtn)
+                            quizObj.IDs = ids
+                            lessonDiv.element.append(document.createElement("p"))
+                            lessonDiv.element.append(quizDiv)
+                            current_index = v
+                            break
+
                         v += 1
 
                 startBtn = Element("start_button").element

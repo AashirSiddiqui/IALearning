@@ -43,6 +43,16 @@
     padding-left: 1%;
     padding-right: 1%;
 }
+.bold_big {
+    font-size: larger;
+    font-weight: 500;
+}
+.fitcontent {
+    width: fit-content;
+    padding-left: 1%;
+    padding-right: 1%;
+    padding-bottom: 1%;
+}
 .transparent {
     color: transparent;
 }

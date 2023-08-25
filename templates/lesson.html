@@ -75,9 +75,9 @@
                 test = document.createElement("p")
                 test.value = "hello"
 
-                textContent = ["ID01Section I", "ID00Welcome to Section 1.", "ID02", "ID03Try rereading the text.", "ID04xx1,25", "ID06yy1,25", "ID05xx / yy", "ID05xx * yy", "ID07_2What is the answer?|This are the answer|This isn't the answer|This is the answer", "ID00Thank you for completing the quiz."]
+                textContent = ["ID01Section I", "ID00Welcome to Section 1.", "ID02", "ID03Try rereading the text.", "ID04xx1,25", "ID06yy1,25", "ID05xx / yy", "ID05xx * yy", "ID08_1+2|What is the answer?|This are the answer|This isn't the answer|This is the answer", "ID00Thank you for completing the quiz."]
                 
-                widgetsID = {"ID00":"text", "ID01":"title", "ID02":"pause", "ID03":"hint", "ID04":"slider", "ID05":"equation", "ID06":"numEntry", "ID07":"radioQuiz"}
+                widgetsID = {"ID00":"text", "ID01":"title", "ID02":"pause", "ID03":"hint", "ID04":"slider", "ID05":"equation", "ID06":"numEntry", "ID07":"radioQuiz", "ID08":"checkboxQuiz", "ID09":"entryQuiz"}
                 
                 canContinue = False
 
@@ -99,10 +99,11 @@
                 answerTemp = document.getElementById("answerTemp")
 
                 class Quiz():
-                    def __init__(self, quizInfo, ids):
+                    def __init__(self, quizInfo, ids, type):
                         self.info = quizInfo
                         self.IDs = ids
-                        print(self.info)
+                        self.type = type
+                        #print(self.info)
 
                 ## Parser
 
@@ -142,17 +143,48 @@
                 def submitQuiz(quizObj):
                     answerIndex = quizObj.info[-1]
                     quizObj.info = quizObj.info.pop(len(quizObj.info)-1)
-                    print(answerIndex)
-                    print(quizObj.info)
-                    correctAnswer = document.getElementById(quizObj.IDs[int(answerIndex)])
+                    #print(answerIndex)
+                    #print(quizObj.info)
                     newAnswerMessage = answerTemp.cloneNode(deep=True)
                     newAnswerMessage.hidden = False
-                    print(correctAnswer.id)
-                    if correctAnswer.checked:
-                        newAnswerMessage.lastElementChild.hidden = True
-                    else:
-                        newAnswerMessage.firstElementChild.src = "static/crossmark.png"
-                        newAnswerMessage.lastElementChild.innerHTML = "Correct Answer(s): "+str(document.getElementById(correctAnswer.id+"label").innerHTML)
+                    if quizObj.type == "radio":
+                        correctAnswer = document.getElementById(quizObj.IDs[int(answerIndex)])
+                        #print(correctAnswer.id)
+                        if correctAnswer.checked:
+                            newAnswerMessage.lastElementChild.hidden = True
+                        else:
+                            newAnswerMessage.firstElementChild.src = "static/crossmark.png"
+                            newAnswerMessage.lastElementChild.innerHTML = "Correct Answer: "+str(document.getElementById(correctAnswer.id+"label").innerHTML)
+                    elif quizObj.type == "checkbox":
+                        answerIndexes = answerIndex
+                        answerIndexes = answerIndexes.split("+")
+                        newlist = []
+                        for i in answerIndexes:
+                            newlist.append(int(i))
+                        answerIndexes = newlist
+                        answerIndexes.sort()
+                        print(quizObj.IDs)
+                        checkedIndexes = []
+                        v = 0
+                        for i in quizObj.IDs:
+                            el = document.getElementById(i)
+                            print(el.type)
+                            if el.type == "checkbox":
+                                if el.checked:
+                                    checkedIndexes.append(v)
+                            v += 1
+                        checkedIndexes.sort()
+                        print(checkedIndexes)
+                        print(answerIndexes)
+                        if checkedIndexes == answerIndexes:
+                            newAnswerMessage.lastElementChild.hidden = True
+                        else:
+                            newAnswerMessage.firstElementChild.src = "static/crossmark.png"
+                            correctAnswerString = "| "
+                            for i in answerIndexes:
+                                correctAnswerString += document.getElementById(str(quizObj.IDs[i])+"label").innerHTML + " | "
+                            newAnswerMessage.lastElementChild.innerHTML = "Correct Answer(s): "+correctAnswerString
+                    document.getElementById(quizObj.IDs[-1]).disabled = True
                     lessonDiv.element.appendChild(document.createElement("p"))
                     lessonDiv.element.appendChild(newAnswerMessage)
                     continue_btn()
@@ -162,7 +194,7 @@
                     global values, equations
                     slider = document.getElementById(id)
                     if "Entry" in id:
-                        print("entry ", slider.lastElementChild.value)
+                        #print("entry ", slider.lastElementChild.value)
                         if float(slider.lastElementChild.value) > int(slider.lastElementChild.getAttribute("max")):
                             slider.lastElementChild.value = slider.lastElementChild.getAttribute("max")
                         elif float(slider.lastElementChild.value) < int(slider.lastElementChild.getAttribute("min")):
@@ -173,25 +205,25 @@
                     for i in outputs:
                         if valueid in i:
                             equations[i][valueid] = values[valueid]
-                            print(equations)
+                            #print(equations)
                             complete = True
                             for v in equations[i]:
                                 if v not in operators:
                                     if type(equations[i][v]) != type('1'):
-                                        print("not complete")
+                                        #print("not complete")
                                         complete = False
                                         break
                             if complete == True:
                                 equation = document.getElementById(outputs[i])
                                 eqString = ""
                                 for v in equations[i]:
-                                    print(v)
+                                    #print(v)
                                     if v in operators:
                                         eqString += str(v)
                                     else:
                                         eqString += equations[i][v]
                                 equation.lastElementChild.innerHTML = round(eval(eqString), 2)
-                    print(values)
+                    #print(values)
 
                 ## Displayer
                 current_index = 0
@@ -203,7 +235,7 @@
                     clicked_button.disabled = True
                     v = 0
                     for i in pageContent:
-                        print(i)
+                        #print(i)
                         if i[0] == "text":
                             text = document.createElement('p')
                             text.innerHTML = i[1]
@@ -284,17 +316,18 @@
                             correctIndex = i[1][1]
                             i[1] = i[1].replace("_"+correctIndex, "")
                             quizInfo = i[1].split("|")
-                            print(quizInfo)
+                            #print(quizInfo)
                             quizDiv = quizDivTemp.cloneNode(deep=True)
                             question = document.createElement("p")
                             question.setAttribute("class", "bold_big")
-                            question.innerHTML = quizInfo[0]
+                            question.innerHTML = quizInfo[1]
                             quizDiv.hidden = False
                             quizDiv.append(question)
                             quizDiv.id = "Quiz "+str(current_id)
                             current_id += 1
                             quizInfo.pop(0)
-                            quizObj = Quiz(quizInfo, [quizDiv.id])
+                            quizInfo.pop(0)
+                            quizObj = Quiz(quizInfo, [quizDiv.id], "radio")
                             ids = []
                             for x in quizInfo:
                                 optClone = radioOptionTemp.cloneNode(deep=True)
@@ -315,8 +348,53 @@
                             current_id += 1
                             submitBtn.innerHTML = "Submit"
                             quizInfo.append(correctIndex)
-                            print(quizInfo)
-                            submitBtn.setAttribute("py-click", "submitQuiz(Quiz("+str(quizInfo)+", "+str(ids)+"))")
+                            #print(quizInfo)
+                            submitBtn.setAttribute("py-click", "submitQuiz(Quiz("+str(quizInfo)+", "+str(ids)+", 'radio'))")
+                            quizDiv.append(submitBtn)
+                            quizObj.IDs = ids
+                            lessonDiv.element.append(document.createElement("p"))
+                            lessonDiv.element.append(quizDiv)
+                            current_index = v
+                            break
+                        if i[0] == "checkboxQuiz":
+                            quizInfo = i[1].split("|")
+                            correctIndex = quizInfo[0].replace("_", "")
+                            i[1] = i[1].replace("_"+correctIndex, "")
+                            #print(quizInfo)
+                            quizDiv = quizDivTemp.cloneNode(deep=True)
+                            question = document.createElement("p")
+                            question.setAttribute("class", "bold_big")
+                            question.innerHTML = quizInfo[1]
+                            quizDiv.hidden = False
+                            quizDiv.append(question)
+                            quizDiv.id = "Quiz "+str(current_id)
+                            current_id += 1
+                            quizInfo.pop(0)
+                            quizInfo.pop(0)
+                            quizObj = Quiz(quizInfo, [quizDiv.id], "checkbox")
+                            ids = []
+                            for x in quizInfo:
+                                optClone = radioOptionTemp.cloneNode(deep=True)
+                                optClone.id = current_id
+                                ids.append(current_id)
+                                current_id += 1
+                                optClone.setAttribute("name", quizInfo[0])
+                                optClone.setAttribute("type", "checkbox")
+                                newLabel = document.createElement("label")
+                                newLabel.setAttribute("for", current_id - 1)
+                                newLabel.innerHTML = " " + str(x)
+                                newLabel.id = optClone.id + "label"
+                                quizDiv.append(optClone)
+                                quizDiv.append(newLabel)
+                                quizDiv.append(document.createElement("br"))
+                            submitBtn = document.createElement("button")
+                            submitBtn.id = current_id
+                            ids.append(current_id)
+                            current_id += 1
+                            submitBtn.innerHTML = "Submit"
+                            quizInfo.append(correctIndex)
+                            #print(quizInfo)
+                            submitBtn.setAttribute("py-click", "submitQuiz(Quiz("+str(quizInfo)+", "+str(ids)+", 'checkbox'))")
                             quizDiv.append(submitBtn)
                             quizObj.IDs = ids
                             lessonDiv.element.append(document.createElement("p"))

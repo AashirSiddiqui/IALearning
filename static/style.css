@@ -4,6 +4,9 @@
     align-self: center;
     text-align: center;
 }
+.leftAlign {
+    align-self: flex-start;
+}
 .small {
     font-size: small;
 }

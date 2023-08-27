@@ -335,10 +335,12 @@
                                 ids.append(current_id)
                                 current_id += 1
                                 optClone.setAttribute("name", quizInfo[0])
+                                optClone.setAttribute("class", "leftAlign")
                                 newLabel = document.createElement("label")
                                 newLabel.setAttribute("for", current_id - 1)
                                 newLabel.innerHTML = " " + str(x)
                                 newLabel.id = optClone.id + "label"
+                                newLabel.setAttribute("class", "leftAlign")
                                 quizDiv.append(optClone)
                                 quizDiv.append(newLabel)
                                 quizDiv.append(document.createElement("br"))
@@ -380,10 +382,12 @@
                                 current_id += 1
                                 optClone.setAttribute("name", quizInfo[0])
                                 optClone.setAttribute("type", "checkbox")
+                                optClone.setAttribute("class", "leftAlign")
                                 newLabel = document.createElement("label")
                                 newLabel.setAttribute("for", current_id - 1)
                                 newLabel.innerHTML = " " + str(x)
                                 newLabel.id = optClone.id + "label"
+                                newLabel.setAttribute("class", "leftAlign")
                                 quizDiv.append(optClone)
                                 quizDiv.append(newLabel)
                                 quizDiv.append(document.createElement("br"))

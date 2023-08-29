@@ -75,7 +75,7 @@
                 test = document.createElement("p")
                 test.value = "hello"
 
-                textContent = ["ID01Section I", "ID00Welcome to Section 1.", "ID02", "ID03Try rereading the text.", "ID04xx1,25", "ID06yy1,25", "ID05xx / yy", "ID05xx * yy", "ID08_1+2|What is the answer?|This are the answer|This isn't the answer|This is the answer", "ID00Thank you for completing the quiz."]
+                textContent = ["ID01Section I", "ID00Welcome to Section 1.", "ID02", "ID03Try rereading the text.", "ID04xx1,25", "ID06yy1,25", "ID05xx / yy", "ID05xx * yy", "ID09_answer|What is the answer?", "ID00Thank you for completing the quiz."]
                 
                 widgetsID = {"ID00":"text", "ID01":"title", "ID02":"pause", "ID03":"hint", "ID04":"slider", "ID05":"equation", "ID06":"numEntry", "ID07":"radioQuiz", "ID08":"checkboxQuiz", "ID09":"entryQuiz"}
                 
@@ -184,6 +184,15 @@
                             for i in answerIndexes:
                                 correctAnswerString += document.getElementById(str(quizObj.IDs[i])+"label").innerHTML + " | "
                             newAnswerMessage.lastElementChild.innerHTML = "Correct Answer(s): "+correctAnswerString
+                    elif quizObj.type == "entry":
+                        correctAnswer = answerIndex
+                        #print(correctAnswer.id)
+                        entry = document.getElementById(str(quizObj.IDs[0]))
+                        if entry.value == correctAnswer:
+                            newAnswerMessage.lastElementChild.hidden = True
+                        else:
+                            newAnswerMessage.firstElementChild.src = "static/crossmark.png"
+                            newAnswerMessage.lastElementChild.innerHTML = "Correct Answer: "+str(correctAnswer)
                     document.getElementById(quizObj.IDs[-1]).disabled = True
                     lessonDiv.element.appendChild(document.createElement("p"))
                     lessonDiv.element.appendChild(newAnswerMessage)
@@ -399,6 +408,47 @@
                             quizInfo.append(correctIndex)
                             #print(quizInfo)
                             submitBtn.setAttribute("py-click", "submitQuiz(Quiz("+str(quizInfo)+", "+str(ids)+", 'checkbox'))")
+                            quizDiv.append(submitBtn)
+                            quizObj.IDs = ids
+                            lessonDiv.element.append(document.createElement("p"))
+                            lessonDiv.element.append(quizDiv)
+                            current_index = v
+                            break
+                        if i[0] == "entryQuiz":
+                            i[1] = i[1].replace("_", "")
+                            quizInfo = i[1].split("|")
+                            correctIndex = quizInfo[0]
+                            quizInfo.pop(0)
+                            print(quizInfo)
+                            quizDiv = quizDivTemp.cloneNode(deep=True)
+                            question = document.createElement("p")
+                            question.setAttribute("class", "bold_big")
+                            question.innerHTML = quizInfo[0]
+                            quizDiv.hidden = False
+                            quizDiv.append(question)
+                            quizDiv.id = "Quiz "+str(current_id)
+                            current_id += 1
+                            quizObj = Quiz(quizInfo, [quizDiv.id], "radio")
+                            ids = []
+                            optClone = radioOptionTemp.cloneNode(deep=True)
+                            optClone.id = current_id
+                            ids.append(current_id)
+                            current_id += 1
+                            optClone.setAttribute("class", "leftAlign")
+                            optClone.setAttribute("type", "entry")
+                            quizDiv.append(optClone)
+                            quizDiv.append(document.createElement("p"))
+                            submitBtn = document.createElement("button")
+                            submitBtn.id = current_id
+                            ids.append(current_id)
+                            current_id += 1
+                            submitBtn.innerHTML = "Submit"
+                            quizInfo.append(correctIndex)
+                            #print(quizInfo)
+                            print(quizInfo)
+                            submitBtn.setAttribute("py-click", "submitQuiz(Quiz("+str(quizInfo)+", "+str(ids)+", 'entry'))")
+                            lessonDiv.element.append(document.createElement("p"))
+                            print(quizInfo)
                             quizDiv.append(submitBtn)
                             quizObj.IDs = ids
                             lessonDiv.element.append(document.createElement("p"))

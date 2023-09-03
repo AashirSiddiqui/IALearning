@@ -40,6 +40,13 @@
 
             </div>
 
+            <div id="finish template" hidden class="clickable padBottom bordered center hint">                
+                <p></p>
+                <img src="static/lesson-done-icon.png" width="50" height="50" class="side">
+                <p class="side">Lesson completed!</p>
+                <img src="static/lesson-done-icon.png" width="50" height="50" class="side rotated">
+            </div>
+
             <div id = "slider template" hidden class = "bordered center slidecontainer">
                 <p id = "value display" class = "italic small"></p>
                 <input type="range" min="1" max="100" value="50" class="center slider" id="range slider">
@@ -68,10 +75,13 @@
             <py-script>
 
                 from time import sleep
-                from js import document
+                from js import document, window
                 from pyscript import Element
-                import random
+                import random, asyncio
 
+                def returnToHome():
+                    window.location.href = "home"
+                
                 test = document.createElement("p")
                 test.value = "hello"
 
@@ -139,6 +149,12 @@
                     hintText.setAttribute("class", hintText.getAttribute("class").replace("transparent", ""))
                     hintText.style.color = "#4169e1"
                 
+                ## Finish Lesson Function
+                async def finish():
+                    reply = await js.fetch("/submitlesson", {"method":"POST"})
+                    jsonReply = await reply.json()
+                    #print(jsonReply)
+
                 ## Quiz Function
                 def submitQuiz(quizObj):
                     answerIndex = quizObj.info[-1]
@@ -163,19 +179,19 @@
                             newlist.append(int(i))
                         answerIndexes = newlist
                         answerIndexes.sort()
-                        print(quizObj.IDs)
+                        #print(quizObj.IDs)
                         checkedIndexes = []
                         v = 0
                         for i in quizObj.IDs:
                             el = document.getElementById(i)
-                            print(el.type)
+                            #print(el.type)
                             if el.type == "checkbox":
                                 if el.checked:
                                     checkedIndexes.append(v)
                             v += 1
                         checkedIndexes.sort()
-                        print(checkedIndexes)
-                        print(answerIndexes)
+                        #print(checkedIndexes)
+                        #print(answerIndexes)
                         if checkedIndexes == answerIndexes:
                             newAnswerMessage.lastElementChild.hidden = True
                         else:
@@ -239,12 +255,15 @@
                 current_id = 0
                 clicked_button = Element("start_button").element
                 def on_start():
+                    ending = False
                     global current_index, current_id, clicked_button, pageContent
                     current_index = 0
                     clicked_button.disabled = True
                     v = 0
                     for i in pageContent:
                         #print(i)
+                        if i == pageContent[-1]:
+                            ending = True
                         if i[0] == "text":
                             text = document.createElement('p')
                             text.innerHTML = i[1]
@@ -419,7 +438,7 @@
                             quizInfo = i[1].split("|")
                             correctIndex = quizInfo[0]
                             quizInfo.pop(0)
-                            print(quizInfo)
+                            #print(quizInfo)
                             quizDiv = quizDivTemp.cloneNode(deep=True)
                             question = document.createElement("p")
                             question.setAttribute("class", "bold_big")
@@ -445,18 +464,24 @@
                             submitBtn.innerHTML = "Submit"
                             quizInfo.append(correctIndex)
                             #print(quizInfo)
-                            print(quizInfo)
+                            #print(quizInfo)
                             submitBtn.setAttribute("py-click", "submitQuiz(Quiz("+str(quizInfo)+", "+str(ids)+", 'entry'))")
                             lessonDiv.element.append(document.createElement("p"))
-                            print(quizInfo)
+                            #print(quizInfo)
                             quizDiv.append(submitBtn)
                             quizObj.IDs = ids
                             lessonDiv.element.append(document.createElement("p"))
                             lessonDiv.element.append(quizDiv)
                             current_index = v
                             break
-
                         v += 1
+                    if ending:
+                        asyncio.ensure_future(finish())
+                        newMessage = document.getElementById("finish template").cloneNode(deep=True)
+                        newMessage.hidden = False
+                        newMessage.setAttribute("py-click", "returnToHome()")
+                        lessonDiv.element.append(document.createElement("p"))
+                        lessonDiv.element.append(newMessage)
 
                 startBtn = Element("start_button").element
                 startBtn.disabled = False

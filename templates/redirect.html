@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<html>
+    <title>...</title>
+    <head>
+        <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+        <link rel="stylesheet" href="static/style.css" />
+        <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+        <py-config>
+            [splashscreen]
+                enabled = false
+        </py-config>
+    </head>
+    <body>
+        <h2 class="center">LOADING...</h2>
+        <p hidden id="page" class="center">{{page}}</p>
+        <py-script>
+            from js import window, document
+            page = document.getElementById("page")
+            window.location.href = page.innerHTML
+        </py-script>
+    </body>
+</html>

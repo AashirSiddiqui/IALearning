@@ -1,11 +1,12 @@
 <html>
-  
+    
     <title>IALearning</title>
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
 
     <head>
 
         <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+        <link rel="stylesheet" href="static/style.css" />
         <script defer src="https://pyscript.net/latest/pyscript.js"></script>
   
         <py-config>
@@ -17,15 +18,13 @@
 
     <body>
 
-        <h1><strong>Lesson Craft</strong></h1>
-        
-        <!-- <form action="account.html">
-            <button type="submit">Sign Up / Log In</button>
-        </form> -->
-
-        <big>Welcome!</big>
-
+        <image src="static/icon.png" class="flex logo side"></image>
+        <h1 class="side center"><strong>IA Learning</strong></h1>
+        <button id="loginBtn" class = "side rightAlign">Log In</button>
+        <button id="signUpBtn" class = "side rightAlign">Sign Up</button>
         <br>
+        <p></p>
+        <h3 class="medBold">Interactive lessons made by people like you,<br>for people like you.</h3>
 
         <!-- <py-script>
 
@@ -36,6 +35,9 @@
         <form action="lesson">
             <button type="submit">Test Lesson</button>
         </form>
+
+        <p></p>
+        <p>Made for the 2023 Congressional App Challenge</p>
 
     </body>
 

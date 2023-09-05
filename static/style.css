@@ -4,6 +4,20 @@
     align-self: center;
     text-align: center;
 }
+.flex {
+    display: flex;
+}
+.logo {
+    width: 40;
+    height: 40;
+}
+.medBold {
+    font-weight: 500;
+}
+.rightAlign {
+    align-self: flex-end;
+    float: right;
+}
 .leftAlign {
     align-self: flex-start;
 }

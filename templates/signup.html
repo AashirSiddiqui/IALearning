@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+
+        <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+        <link rel="stylesheet" href="static/style.css" />
+        <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+
+        <py-config>
+            [splashscreen]
+                enabled = false
+        </py-config>
+
+        <py-script>
+            # From the Pyscript Documentation
+            from pyodide.http import pyfetch, FetchResponse
+            from typing import Any
+            from js import document
+            import json
+            import asyncio
+
+            async def request(url, method = "GET", body = None, **fetch_kwargs: Any) -> FetchResponse:
+                kwargs = {"method": method, "mode": "cors"}
+                if body and method not in ["GET", "HEAD"]:
+                    kwargs["body"] = body
+                kwargs.update(fetch_kwargs)
+
+                response = await pyfetch(url, **kwargs)
+                return response
+            
+            async def submit():
+                await request("/createaccount", method="POST", body = {"username":document.getElementById("username").value, "password":document.getElementById("password").value})
+
+            def submitWrapper():
+                asyncio.ensure_future(submit())
+                print("executed")  
+
+        </py-script>
+
+
+    </head>
+
+    <body>
+        <h2 class="center">Sign Up</h2>
+        <p></p>
+        <form method="post" action="/createaccount">
+            <input type = "text" name = "username" id="username"><br>
+            <input type = "text" name = "password" id="password"><br>
+            <button type="submit">Sign Up</button>
+        </form>
+
+    </body>
+
+</html>

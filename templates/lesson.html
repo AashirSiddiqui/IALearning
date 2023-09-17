@@ -88,7 +88,11 @@
                 test = document.createElement("p")
                 test.value = "hello"
 
-                textContent = ["ID01Section I", "ID00Welcome to Section 1.", "ID02", "ID03Try rereading the text.", "ID04xx1,25", "ID06yy1,25", "ID05xx / yy", "ID05xx * yy", "ID09_answer|What is the answer?", "ID00Thank you for completing the quiz."]
+                textContent = [
+                    "ID01Part 1: Area",
+                    "ID00Area is the size of a two dimensional polygon, measured in square units.",
+                    "ID00To get the area of a rectangle, simply multiply the length and the width together. For example, if there is a rectangle with a length of 3 and a width of 2, its area will be 3 * 2, which equals 6."
+                ]
                 
                 widgetsID = {"ID00":"text", "ID01":"title", "ID02":"pause", "ID03":"hint", "ID04":"slider", "ID05":"equation", "ID06":"numEntry", "ID07":"radioQuiz", "ID08":"checkboxQuiz", "ID09":"entryQuiz"}
                 
@@ -154,7 +158,7 @@
                 
                 ## Finish Lesson Function
                 async def finish():
-                    reply = await js.fetch("/submitlesson", {"method":"POST"})
+                    reply = await js.fetch("/submitlesson", {"method":"POST", "lessonID":"1"})
                     jsonReply = await reply.json()
                     #print(jsonReply)
 

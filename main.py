@@ -1,22 +1,35 @@
 from flask import Flask, render_template, request, session
 from pymongo import MongoClient
-import json, os
+import json
+import os
+from dotenv import load_dotenv
 
-os.environ['MONGODB_URI'] = "mongodb://ialearning:programmer-of-databases-MGDB@cluster0-shard-00-00.dc1ys.mongodb.net:27017,cluster0-shard-00-01.dc1ys.mongodb.net:27017,cluster0-shard-00-02.dc1ys.mongodb.net:27017/?ssl=true&replicaSet=atlas-54vvqc-shard-0&authSource=admin&retryWrites=true&w=majority" # only if not deployed
+app_path = os.path.join(os.path.dirname(__file__), '.')
+dotenv_path = os.path.join(app_path, '.env')
+load_dotenv(dotenv_path)
 
-client = MongoClient(os.getenv("MONGODB_URI"))
+client = MongoClient(os.environ.get("MONGODB_URI"))
 db = client.IALearning
 
 accounts = db.Accounts
 lessons = db.Lessons
 
-print(db.list_collection_names())
+print(accounts, lessons)
 
 app = Flask((__name__))
 
-@app.route("/")
+app.secret_key = os.environ.get("SECRET_KEY")
+app.config["SESSION_TYPE"] = "filesystem"
+
+@app.route("/", methods=["POST", "GET"])
 def mainpage():
-    return render_template("index.html")
+    if request.method == "GET":
+        return render_template("index.html")
+    elif request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        print(request.form)
+        return {"success":True}
 
 @app.route("/home")
 def accountpage():
@@ -25,17 +38,36 @@ def accountpage():
 @app.route("/signup", methods=["POST", "GET"])
 def signuppage():
     if request.method == "GET":
-        return render_template("signup.html")
+        return render_template("signup.html", message="")
     else:
         username = request.form["username"]
         password = request.form["password"]
         if accounts.count_documents({"username":username}, limit = 1) > 0:
             print("exists")
+            return {"success":False, "message":"An account with that username already exists- please choose another username."}
+        if " " in username:
+            return {"success":False, "message":"Spaces aren't allowed in usernames."}
         else:
             accounts.insert_one({"username":username, "password":password})
         # return render_template("account-created.html")
         session["username"] = username
-        return "200"
+        print(session["username"])
+        return {"success":True}
+    
+@app.route("/signin", methods=["POST"])
+def signin():
+    username = request.form["username"]
+    password = request.form["password"]
+    doc = accounts.find_one({"username":username})
+    if doc is not None:
+        if doc["password"] == password:
+            session["username"] = username
+            return {"success":True}
+        else:
+            return {"success":False, "message":"Incorrect password."}
+    else:
+        return {"sucess":False, "message":"An account with that username doesn't exist."}
+        
 
 @app.route("/lesson.html")
 def redirectToLesson():
@@ -53,4 +85,4 @@ def submitlesson():
 app.debug = True 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0")
+    app.run()

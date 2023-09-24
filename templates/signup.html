@@ -1,55 +1,85 @@
 <!DOCTYPE html>
 <html>
 
-    <head>
-
-        <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
-        <link rel="stylesheet" href="static/style.css" />
-        <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-
-        <py-config>
-            [splashscreen]
-                enabled = false
-        </py-config>
-
-        <py-script>
-            # From the Pyscript Documentation
-            from pyodide.http import pyfetch, FetchResponse
-            from typing import Any
-            from js import document
-            import json
-            import asyncio
-
-            async def request(url, method = "GET", body = None, **fetch_kwargs: Any) -> FetchResponse:
-                kwargs = {"method": method, "mode": "cors"}
-                if body and method not in ["GET", "HEAD"]:
-                    kwargs["body"] = body
-                kwargs.update(fetch_kwargs)
-
-                response = await pyfetch(url, **kwargs)
-                return response
-            
-            async def submit():
-                await request("/createaccount", method="POST", body = {"username":document.getElementById("username").value, "password":document.getElementById("password").value})
-
-            def submitWrapper():
-                asyncio.ensure_future(submit())
-                print("executed")  
-
-        </py-script>
+<head>
 
 
-    </head>
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <link rel="stylesheet" href="static/style.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    <title>Sign Up | IALearning</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
 
-    <body>
-        <h2 class="center">Sign Up</h2>
-        <p></p>
-        <form method="post" action="/createaccount">
-            <input type = "text" name = "username" id="username"><br>
-            <input type = "text" name = "password" id="password"><br>
-            <button type="submit">Sign Up</button>
-        </form>
+    <py-config>
+        [splashscreen]
+        enabled = false
+    </py-config>
 
-    </body>
+</head>
+
+<body>
+    <h2 class="center">Sign Up</h2>
+    <p></p>
+    <p id="message" class="center"></p>
+    <p></p>
+    <form class="center">
+        <input type="text" name="username" id="username"><br>
+        <input type="text" name="password" id="password"><br>
+        <button name="SignUp" class="side" type="button" id="signUpBtn">Sign Up</button>
+        <button type="button" class="side" name="LogIn" id="logInBtn">Log In</button>
+    </form>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        document.getElementById('signUpBtn').addEventListener("click", function () {
+            // alert("sign up");
+            $.ajax({
+                data:{
+                    "username":document.getElementById("username").value,
+                    "password":document.getElementById("password").value
+                },
+                url:"/signup",
+                method:"POST"
+            }).done(function(response){
+                if (response["success"]==true){
+                    console.log("request successful")
+                }
+                else {
+                    document.getElementById("message").textContent = ""
+                    sleep(250).then(()=>{
+                        document.getElementById("message").textContent = response["message"]
+                    })
+                }
+            })
+        });
+        document.getElementById('logInBtn').addEventListener("click", function () {
+            // alert("sign up");
+            $.ajax({
+                data:{
+                    "username":document.getElementById("username").value,
+                    "password":document.getElementById("password").value
+                },
+                url:"/signin",
+                method:"POST"
+            }).done(function(response){
+                if (response["success"]==true){
+                    console.log("request successful")
+                }
+                else {
+                    document.getElementById("message").textContent = ""
+                    sleep(250).then(()=>{
+                        document.getElementById("message").textContent = response["message"]
+                    })
+                }
+            })
+        });
+    </script>
+
+</body>
 
 </html>

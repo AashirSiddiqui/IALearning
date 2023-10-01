@@ -18,11 +18,17 @@
 
     <body>
 
+        <py-script>
+            from js import window, document
+            
+            def openLesson(lessonId):
+                window.location.href = "/lesson?id="+lessonId
+        </py-script>
+
         <image src="static/icon.png" class="flex logo side"></image>
         <h1 class="side center"><strong>IA Learning</strong></h1>
-        <a href="/signup" class="rightAlign"><button id="signUpBtn" class = "side rightAlign">Sign Up</button></a>
+        <a href="/signup" class="bold_big rightAlign"><button id="signUpBtn" class = "side rightAlign">Register / Sign In</button></a>
         <br>
-        <p></p>
         <h3 class="medBold">Interactive lessons made by people like you,<br>for people like you.</h3>
 
         <!-- <py-script>
@@ -34,6 +40,17 @@
         <form action="lesson">
             <button type="submit">Test Lesson</button>
         </form>
+
+        {% for lesson in lessons %}
+            <div class="side box" py-click="openLesson('{{lesson['_id']}}')">
+                <p></p>
+                <p class="center white-text">{{lesson["name"]}}</p>
+                <img src="static/thumbs-up.png" width="25px" height="25px" class="side center"></img>
+                <p class="center white-text side">{{lesson["rating"]}}</p>
+                <p></p>
+                <!-- <p class="white-text side">{{lesson["verified"]}}</p> -->
+            </div>
+        {% endfor %}
 
         <p></p>
         <p>Made for the 2023 Congressional App Challenge</p>

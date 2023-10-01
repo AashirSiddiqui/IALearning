@@ -3,6 +3,7 @@ from pymongo import MongoClient
 import json
 import os
 from dotenv import load_dotenv
+import bson.objectid
 
 app_path = os.path.join(os.path.dirname(__file__), '.')
 dotenv_path = os.path.join(app_path, '.env')
@@ -24,7 +25,8 @@ app.config["SESSION_TYPE"] = "filesystem"
 @app.route("/", methods=["POST", "GET"])
 def mainpage():
     if request.method == "GET":
-        return render_template("index.html")
+        print(lessons.find())
+        return render_template("index.html", lessons=lessons.find())
     elif request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
@@ -33,7 +35,7 @@ def mainpage():
 
 @app.route("/home")
 def accountpage():
-    return render_template("account.html")
+    return render_template("redirect.html", page="/")
 
 @app.route("/signup", methods=["POST", "GET"])
 def signuppage():
@@ -75,7 +77,9 @@ def redirectToLesson():
 
 @app.route("/lesson")
 def lessonpage():
-    return render_template("lesson.html", lesson=["ID01Learntest", "ID02", "ID00Welcome to this text","ID03Try rereading the text.", "ID00You will learn here"])
+    lessonId = request.args.get("id")
+    lesson = lessons.find_one({"_id":bson.objectid.ObjectId(lessonId)})
+    return render_template("lesson.html", lesson=json.dumps({"list":lesson["content"]}))
 
 @app.route("/submitlesson", methods=["POST", "GET"])
 def submitlesson():

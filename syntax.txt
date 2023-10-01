@@ -1,0 +1,4 @@
+ID05 - Equation
+    Example: ID05xx * 7
+    xx = variable name
+    "xx * 7" is the equation. all arguments in the equation must be separated by spaces.

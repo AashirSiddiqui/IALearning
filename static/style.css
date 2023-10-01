@@ -7,6 +7,17 @@
 .flex {
     display: flex;
 }
+.box {
+    background-color: black;
+    border-color: blue;
+    border-width: 1%;
+    padding-left: 2%;
+    padding-right: 2%;
+    border-radius: 10px;
+}
+.white-text{
+    color: white;
+}
 .logo {
     width: 40;
     height: 40;
@@ -57,7 +68,7 @@
 }
 .bordered {
     border: 2px solid rgb(0, 0, 0);
-    border-radius: 20px;
+    border-radius: 10px;
 }
 .equation {
     width:fit-content;

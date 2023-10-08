@@ -25,8 +25,12 @@ app.config["SESSION_TYPE"] = "filesystem"
 @app.route("/", methods=["POST", "GET"])
 def mainpage():
     if request.method == "GET":
-        print(lessons.find())
-        return render_template("index.html", lessons=lessons.find())
+        account_exists = False
+        account_username = ""
+        if session.get("username"):
+            account_username = session.get("username")
+            account_exists = True
+        return render_template("index.html", lessons=lessons.find({"published":True}), username=account_username, isAccount = account_exists)
     elif request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
@@ -70,6 +74,25 @@ def signin():
     else:
         return {"sucess":False, "message":"An account with that username doesn't exist."}
         
+@app.route("/your-lessons")
+def yourLessons():
+    if session.get("username"):
+        account = accounts.find_one({"username":session.get("username")})
+        ownedLessons = list(lessons.find({"creator_id":account["_id"]}))
+        print(ownedLessons)
+        return render_template("your-lessons.html", lessons=ownedLessons)
+    else:
+        return(render_template("redirect.html", page="signup"))
+
+@app.route("/lesson-editor")
+def lessonEditor():
+    if session.get("username"):
+        lessonId = request.args["id"]
+        lesson = lessons.find_one({"_id":bson.objectid.ObjectId(lessonId)})
+        print(lesson)
+        return render_template("lesson-editor.html", lessons=lesson)
+    else:
+        return(render_template("redirect.html", page="signup"))
 
 @app.route("/lesson.html")
 def redirectToLesson():
@@ -77,10 +100,12 @@ def redirectToLesson():
 
 @app.route("/lesson")
 def lessonpage():
-    lessonId = request.args.get("id")
-    lesson = lessons.find_one({"_id":bson.objectid.ObjectId(lessonId)})
-    return render_template("lesson.html", lesson=json.dumps({"list":lesson["content"]}))
-
+    if session.get("username"):
+        lessonId = request.args.get("id")
+        lesson = lessons.find_one({"_id":bson.objectid.ObjectId(lessonId)})
+        return render_template("lesson.html", lesson=json.dumps({"list":lesson["content"]}), lesson_name=lesson["name"])
+    else:
+        return render_template("redirect.html", page="/signup")
 @app.route("/submitlesson", methods=["POST", "GET"])
 def submitlesson():
     return json.dumps("hello")

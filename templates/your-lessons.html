@@ -1,0 +1,24 @@
+{% extends 'lesson-base.html' %}
+{% block title %} Your Lessons | IALearning {% endblock %}
+
+{% block body %}
+<h2 class="bold">Your Lessons</h2>
+
+{% for lesson in lessons %}
+<a href="/lesson-editor?id={{lesson['_id']}}">
+<div class = "side clickable blackbordered box">
+    <p></p>
+    <p class="center white-text">{{lesson["name"]}}</p>
+    <img src="static/thumbs-up.png" width="25px" height="25px" class="side center"></img>
+    <p class="center white-text side">{{lesson["rating"]}}</p>
+    {% if lesson["published"] %}
+    <p class="white-text">Published</p>
+    {% else %}
+    <p class="white-text">Unpublished</p>
+    {% endif %}
+    <p></p>
+</div>
+</a>
+{% endfor %}
+
+{% endblock %}

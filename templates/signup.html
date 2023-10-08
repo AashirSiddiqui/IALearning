@@ -48,6 +48,7 @@
             }).done(function(response){
                 if (response["success"]==true){
                     console.log("request successful")
+                    window.location.href = "/"
                 }
                 else {
                     document.getElementById("message").textContent = ""
@@ -69,6 +70,7 @@
             }).done(function(response){
                 if (response["success"]==true){
                     console.log("request successful")
+                    window.location.href = "/"
                 }
                 else {
                     document.getElementById("message").textContent = ""

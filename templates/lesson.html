@@ -22,7 +22,7 @@
 
         <br>
 
-        <h1 class="center">Lesson Name</h1>
+        <h1 class="center">{{lesson_name}}</h1>
         <div class="center">
             <button id="start_button" class="bigButton" py-click="on_start()" disabled>Start</button>
         </div>
@@ -99,7 +99,7 @@
                 #    "ID05xx / yy"
                 #    ]
                 textContent = json.loads(document.getElementById("lessonContent").innerHTML)["list"]
-                print(textContent)
+                #print(textContent)
 
                 widgetsID = {"ID00":"text", "ID01":"title", "ID02":"pause", "ID03":"hint", "ID04":"slider", "ID05":"equation", "ID06":"numEntry", "ID07":"radioQuiz", "ID08":"checkboxQuiz", "ID09":"entryQuiz"}
                 

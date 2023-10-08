@@ -1,24 +1,32 @@
-<!DOCTYPE html>
-
 <html>
-    <title>IALearning</title>
-    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     
+    <title>
+        {% block title %} {% endblock %}
+    </title>
+    
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+
     <head>
+
         <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
         <link rel="stylesheet" href="static/style.css" />
+
+        {% block pyscript %}
         <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+  
         <py-config>
             [splashscreen]
                 enabled = false
         </py-config>
+        {% endblock %}
+
     </head>
+
     <body>
-        <p hidden id="page" class="center">{{page}}</p>
-        <py-script>
-            from js import window, document
-            page = document.getElementById("page")
-            window.location.href = page.innerHTML
-        </py-script>
+
+        {% block body %}
+        {% endblock %}
+
     </body>
+
 </html>

@@ -26,9 +26,13 @@
         </py-script>
 
         <image src="static/icon.png" class="flex logo side"></image>
-        <h1 class="side center"><strong>IA Learning</strong></h1>
-        <a href="/signup" class="bold_big rightAlign"><button id="signUpBtn" class = "side rightAlign">Register / Sign In</button></a>
-        <br>
+        <h1 class="side center"><strong>IA Learning</strong></h1><br>
+        {% if isAccount %}
+            <a href="/signup" class="bold_big side rightAlign"><button id="signUpBtn" class = "side rightAlign">Use Another Account</button></a>
+            <h2 class="">Welcome, {{username}}!</h2>
+        {% else %}
+            <a href="/signup" class="bold_big rightAlign"><button id="signUpBtn" class = "side rightAlign">Sign In / Register</button></a><br>
+        {% endif %}
         <h3 class="medBold">Interactive lessons made by people like you,<br>for people like you.</h3>
 
         <!-- <py-script>
@@ -37,16 +41,23 @@
         
         </py-script> -->
 
-        <form action="lesson">
+        <!-- <form action="lesson">
             <button type="submit">Test Lesson</button>
-        </form>
+        </form> -->
 
         {% for lesson in lessons %}
-            <div class="side box" py-click="openLesson('{{lesson['_id']}}')">
+            <div class="side box clickable blackbordered" py-click="openLesson('{{lesson['_id']}}')">
                 <p></p>
                 <p class="center white-text">{{lesson["name"]}}</p>
-                <img src="static/thumbs-up.png" width="25px" height="25px" class="side center"></img>
-                <p class="center white-text side">{{lesson["rating"]}}</p>
+                <img src="static/thumbs-up.png" width="25px" height="25px" class="leftAlign side center">
+                <p class="white-text side center">{{lesson["rating"]}}</p> <br>
+                {% if lesson["verified"] %}
+                    <br>
+                    <img src="static/checkmark.png" class="side" width="20px" height="20px">
+                    <img src="static/checkmark.png" class="side" width="20px" height="20px">
+                    <img src="static/checkmark.png" class="side" width="20px" height="20px">
+                    <img src="static/checkmark.png" class="side" width="20px" height="20px">
+                {% endif %}
                 <p></p>
                 <!-- <p class="white-text side">{{lesson["verified"]}}</p> -->
             </div>

@@ -2,6 +2,14 @@
 {% block title %} Lesson Editor | IALearning {% endblock %}
 
 {% block body %}
-<h2 class="bold">Lesson Editor</h2>
+<h2>Lesson Editor</h2>
+
+{% for element in lesson %}
+
+    <div>
+        <p>{{ element }}</p>
+    </div>
+
+{% endfor %}
 
 {% endblock %}

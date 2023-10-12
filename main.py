@@ -41,6 +41,20 @@ def mainpage():
 def accountpage():
     return render_template("redirect.html", page="/")
 
+@app.route("/makelesson", methods=["POST"])
+def makeLesson():
+    lessonName = request.form["lesson-name"]
+    creatorId = request.form["lesson-creatorId"]
+    newLsn = lessons.insert_one({
+        "name":lessonName,
+        "creator_id":creatorId,
+        "content":[],
+        "rating":0,
+        "verified":False,
+        "published":False
+    })
+    return str(newLsn.inserted_id)
+
 @app.route("/signup", methods=["POST", "GET"])
 def signuppage():
     if request.method == "GET":
@@ -90,7 +104,7 @@ def lessonEditor():
         lessonId = request.args["id"]
         lesson = lessons.find_one({"_id":bson.objectid.ObjectId(lessonId)})
         print(lesson)
-        return render_template("lesson-editor.html", lessons=lesson)
+        return render_template("lesson-editor.html", lesson=lesson["content"])
     else:
         return(render_template("redirect.html", page="signup"))
 

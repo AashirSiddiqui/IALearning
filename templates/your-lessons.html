@@ -2,7 +2,7 @@
 {% block title %} Your Lessons | IALearning {% endblock %}
 
 {% block body %}
-<h2 class="bold">Your Lessons</h2>
+<h2>Your Lessons</h2>
 
 {% for lesson in lessons %}
 <a href="/lesson-editor?id={{lesson['_id']}}">
@@ -14,11 +14,39 @@
     {% if lesson["published"] %}
     <p class="white-text">Published</p>
     {% else %}
-    <p class="white-text">Unpublished</p>
+    <p class="white-text">Not published</p>
+    {% endif %}
+    {% if lesson["verified"] %}
+    <p class="white-text">Verified!</p>
+    {% else %}
+    <p class="white-text">Not verified</p>
     {% endif %}
     <p></p>
 </div>
 </a>
 {% endfor %}
+
+<p class="transparent" id="creatorId">{{lessons[0]["creator_id"]}}</p>
+
+<div class="blackbordered box">
+    <p class="side">Lesson Name: </p><input id="lessonName" class="side" type="text"><br>
+    <button id="createLesson">Create Lesson</button>
+</div>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script>
+    document.getElementById("createLesson").addEventListener("click", function() {
+        $.ajax({
+                data:{
+                    "lesson-name":document.getElementById("lessonName").value,
+                    "lesson-creatorId": document.getElementById("creatorId").innerHTML
+                },
+                url:"/makelesson",
+                method:"POST",
+                success: function(data) {
+                    window.location.href = "/lesson-editor?id="+data
+                }
+        })
+    })
+</script>
 
 {% endblock %}

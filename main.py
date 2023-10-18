@@ -47,7 +47,7 @@ def makeLesson():
     creatorId = request.form["lesson-creatorId"]
     newLsn = lessons.insert_one({
         "name":lessonName,
-        "creator_id":creatorId,
+        "creator_id":bson.objectid.ObjectId(creatorId),
         "content":[],
         "rating":0,
         "verified":False,
@@ -98,15 +98,24 @@ def yourLessons():
     else:
         return(render_template("redirect.html", page="signup"))
 
-@app.route("/lesson-editor")
+@app.route("/lesson-editor", methods=["POST", "GET"])
 def lessonEditor():
-    if session.get("username"):
-        lessonId = request.args["id"]
-        lesson = lessons.find_one({"_id":bson.objectid.ObjectId(lessonId)})
-        print(lesson)
-        return render_template("lesson-editor.html", lesson=lesson["content"])
+    if request.method == "GET":
+        if session.get("username"):
+            lessonId = request.args["id"]
+            lesson = lessons.find_one({"_id":bson.objectid.ObjectId(lessonId)})
+            print(lesson)
+            return render_template("lesson-editor.html", lesson=lesson["content"], lessonID=lessonId)
+        else:
+            return(render_template("redirect.html", page="signup"))
     else:
-        return(render_template("redirect.html", page="signup"))
+        print(request.form.items)
+        lessonID = request.form["lessonID"]
+        lessonContent = request.form["lessonContent"]
+        lesson = lessons.find_one({"_id":bson.objectid.ObjectId(lessonID)})
+        lesson["content"] = eval(lessonContent)
+        lessons.update_one({"_id":lesson["_id"]}, {"$set": {"content":eval(lessonContent)}})
+        return "success"
 
 @app.route("/lesson.html")
 def redirectToLesson():

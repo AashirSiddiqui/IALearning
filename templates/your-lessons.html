@@ -2,11 +2,11 @@
 {% block title %} Your Lessons | IALearning {% endblock %}
 
 {% block body %}
-<h2>Your Lessons</h2>
+<h2 class="mx-2">Your Lessons</h2>
 
 {% for lesson in lessons %}
 <a href="/lesson-editor?id={{lesson['_id']}}">
-<div class = "side clickable blackbordered box">
+<div class = "side clickable blackbordered box mx-2">
     <p></p>
     <p class="center white-text">{{lesson["name"]}}</p>
     <img src="static/thumbs-up.png" width="25px" height="25px" class="side center"></img>
@@ -28,9 +28,9 @@
 
 <p class="transparent" id="creatorId">{{lessons[0]["creator_id"]}}</p>
 
-<div class="blackbordered box">
-    <p class="side">Lesson Name: </p><input id="lessonName" class="side" type="text"><br>
-    <button id="createLesson">Create Lesson</button>
+<div>
+    <p class="side mt-3 mx-2">Lesson Name: </p><input id="lessonName" class="mx-1 w-25 side form-control" type="text"><br>
+    <button id="createLesson" class="mx-2">Create Lesson</button>
 </div>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script>

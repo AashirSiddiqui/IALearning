@@ -61,7 +61,7 @@
             </div>
 
             <p></p>
-            <div id = "numEntry template" hidden class = 'bordered center entry'>
+            <div id = "numberEntry template" hidden class = 'bordered center entry'>
                 <p class = "italic small">(aa)</p>
                 <input type="number" class="center">
             </div>
@@ -101,7 +101,7 @@
                 textContent = json.loads(document.getElementById("lessonContent").innerHTML)["list"]
                 #print(textContent)
 
-                widgetsID = {"ID00":"text", "ID01":"title", "ID02":"pause", "ID03":"hint", "ID04":"slider", "ID05":"equation", "ID06":"numEntry", "ID07":"radioQuiz", "ID08":"checkboxQuiz", "ID09":"entryQuiz"}
+                widgetsID = {"ID00":"text", "ID01":"title", "ID02":"pause", "ID03":"hint", "ID04":"slider", "ID05":"equation", "ID06":"numberEntry", "ID07":"radioQuiz", "ID08":"checkboxQuiz", "ID09":"entryQuiz"}
                 
                 canContinue = False
 
@@ -115,7 +115,7 @@
                 hintTemp = document.getElementById("hint template")
                 sliderTemp = document.getElementById("slider template")
                 equationTemp = document.getElementById("equation template")
-                numEntryTemp = document.getElementById("numEntry template")
+                numberEntryTemp = document.getElementById("numberEntry template")
                 radioOptionTemp = document.createElement("input")
                 radioOptionTemp.setAttribute("type", "radio")
                 quizDivTemp = document.getElementById("quizDiv template")
@@ -344,11 +344,11 @@
                             newEquation.hidden = False
                             parsedEquation = i[1].split(" ")
                             equations[i[1]] = dict.fromkeys(parsedEquation, parsedEquation)
-                        if i[0] == "numEntry":
+                        if i[0] == "numberEntry":
                             id = i[1][0:2]
                             i[1] = i[1].replace(id, "")
                             ranges = i[1].split(",")
-                            newEntry = numEntryTemp.cloneNode(deep=True)
+                            newEntry = numberEntryTemp.cloneNode(deep=True)
                             newEntry.id = "Entry "+str(current_id)
                             current_id += 1
                             newEntry.hidden = False

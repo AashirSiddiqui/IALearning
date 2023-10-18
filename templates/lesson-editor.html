@@ -2,14 +2,120 @@
 {% block title %} Lesson Editor | IALearning {% endblock %}
 
 {% block body %}
-<h2>Lesson Editor</h2>
+<h2 class="mx-2">Lesson Editor</h2>
 
+<div>
 {% for element in lesson %}
 
-    <div>
-        <p>{{ element }}</p>
-    </div>
+    <p class="LessonElement" hidden>{{ element }}</p>
 
 {% endfor %}
+</div>
+
+<div id="mainEditor">
+
+</div>
+
+<br>
+<select class="mx-2" name="widget" id="WidgetPicker">
+    <option value="ID00">Text</option>
+    <option value="ID01">Title</option>
+    <option value="ID02">Pause</option>
+    <option value="ID03">Hint</option>
+    <option value="ID04">Slider</option>
+    <option value="ID05">Equation</option>
+    <option value="ID06">NumberEntry</option>
+    <option value="ID07">RadioQuiz</option>
+    <option value="ID08">CheckboxQuiz</option>
+    <option value="ID09">EntryQuiz</option>
+</select>
+<button id="CreateBtn" py-click="createWidget()" class="mx-2">Create</button>
+<p></p>
+<button id="SaveBtn" py-click="renderWidgets()" class="mx-2"><strong>Save</strong></button>
+<p></p>
+<p class="transparent" id="DataString"></p>
+<p class="transparent" id="LessonID">{{ lessonID }}</p>
+
+<script>
+    document.getElementById("SaveBtn").addEventListener("click", function() {
+        $.ajax({
+                data:{
+                    "lessonContent": document.getElementById("DataString").innerHTML,
+                    "lessonID":document.getElementById("LessonID").innerHTML
+                },
+                url:"/lesson-editor",
+                method:"POST"
+        })
+    })
+</script>
+
+<py-script>
+    from js import document
+
+    widgetsID = {"ID00":"text", "ID01":"title", "ID02":"pause", "ID03":"hint", "ID04":"slider", "ID05":"equation", "ID06":"numberEntry", "ID07":"radioQuiz", "ID08":"checkboxQuiz", "ID09":"entryQuiz"}
+    elements = document.getElementsByClassName("LessonElement")
+    mainDiv = document.getElementById("mainEditor")
+    WidgetPicker = document.getElementById("WidgetPicker")
+    plainWidgets = ["pause"]
+
+    lessonContent = []
+    for i in elements:
+        lessonContent.append(i.innerHTML)
+
+    def deleteWidget(index):
+        global lessonContent
+        lessonContent.pop(index)
+        renderWidgets()
+    
+    def createWidget():
+        global lessonContent
+        newWidget = WidgetPicker.value
+        lessonContent.append(newWidget)
+        renderWidgets()
+    
+    def saveWidget(id):
+        global lessonContent
+        changedEntry = document.getElementById(id)
+        index = int(id.replace("Entry", ""))
+        widgetCode = lessonContent[index]
+        widgetCode = list(widgetCode)
+        widgetCode[4:] = changedEntry.value
+        code = "".join(widgetCode)
+        print(code)
+        lessonContent[index] = code
+        renderWidgets()
+
+    def renderWidgets():
+        global lessonContent, mainDiv
+        mainDiv.replaceChildren("")
+        v = 0
+        for i in lessonContent:
+            elementType = widgetsID[i[0:4]]
+            rest = i[4:]
+            print(elementType)
+            print(rest)
+            widgetLabel = document.createElement("p")
+            widgetLabel.innerHTML = "<strong>"+elementType.title() + "</strong> Widget"
+            widgetLabel.setAttribute("class", "mt-3 mx-2")
+            mainDiv.appendChild(widgetLabel)
+            if elementType not in plainWidgets:
+                entry = document.createElement("input")
+                entry.setAttribute("class", "side mx-2 form-control w-25")
+                entry.setAttribute("id", "Entry"+str(v))
+                entry.setAttribute("py-change", "saveWidget('Entry"+str(v)+"')")
+                entry.value = rest
+                mainDiv.appendChild(entry)
+            delButton = document.createElement("button")
+            delButton.innerHTML = "Delete"
+            delButton.setAttribute("class", "side mx-2")
+            delButton.setAttribute("py-click", "deleteWidget("+str(v)+")")
+            mainDiv.appendChild(delButton)
+            mainDiv.appendChild(document.createElement("break"))
+            v += 1
+        document.getElementById("DataString").innerHTML = str(lessonContent)
+    
+    renderWidgets()
+
+</py-script>
 
 {% endblock %}

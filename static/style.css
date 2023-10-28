@@ -84,6 +84,9 @@
     padding-left: 1%;
     padding-right: 1%;
 }
+.greenBackground {
+    background-color: green;
+}
 .bold_big {
     font-size: larger;
     font-weight: 500;

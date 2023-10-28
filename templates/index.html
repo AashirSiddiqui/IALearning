@@ -14,6 +14,8 @@
                 enabled = false
         </py-config>
 
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
     </head>
 
     <body>
@@ -22,18 +24,32 @@
             from js import window, document
             
             def openLesson(lessonId):
-                window.location.href = "/lesson?id="+lessonId
+                window.location.href = "/lesson?id="+lessonId+"&preview=false"
+            
+            def navigateToPage(page):
+                window.location.href = page
         </py-script>
+        <div class="py-4 bg-dark text-white text-center mb-1">
+            <image src="static/icon.png" class=" mx-2 flex logo side"></image>
+            <h1 class="side center mx-2"><strong>IA Learning</strong></h1><br>
+            <p></p>
+            <div class="btn-group btn-group-toggle center mb-3" id="PageNavigator" data-toggle="buttons">
+                <label class="btn btn-info active ml-2" py-click="navigateToPage('/')">
+                  <input type="radio" name="options" id="option1" autocomplete="off" checked> Home
+                </label>
+                <label class="btn btn-info" py-click="navigateToPage('/signup')">
+                  <input type="radio" name="options" id="option2" autocomplete="off"> Sign In / Sign Up
+                </label>
+                <label class="btn btn-info" py-click="navigateToPage('/your-lessons')">
+                  <input type="radio" name="options" id="option3" autocomplete="off"> Your Lessons
+                </label>
+                {% if isAccount %}
+                <p class="mx-2 my-2">Welcome, <strong>{{ username }}</strong>!</p>
+                {% endif %}
+            </div>
+        </div>
 
-        <image src="static/icon.png" class="flex logo side"></image>
-        <h1 class="side center"><strong>IA Learning</strong></h1><br>
-        {% if isAccount %}
-            <a href="/signup" class="bold_big side rightAlign"><button id="signUpBtn" class = "side rightAlign">Use Another Account</button></a>
-            <h2 class="">Welcome, {{username}}!</h2>
-        {% else %}
-            <a href="/signup" class="bold_big rightAlign"><button id="signUpBtn" class = "side rightAlign">Sign In / Register</button></a><br>
-        {% endif %}
-        <h3 class="medBold">Interactive lessons made by people like you,<br>for people like you.</h3>
+        <h5 class="mx-2">Interactive lessons made by people like you,<br>for people like you.</h5>
 
         <!-- <py-script>
 
@@ -46,7 +62,11 @@
         </form> -->
 
         {% for lesson in lessons %}
-            <div class="side box clickable blackbordered" py-click="openLesson('{{lesson['_id']}}')">
+        {% if lesson['_id'] in completedIds %}
+            <div class="mx-2 side box clickable blackbordered greenBackground" py-click="openLesson('{{lesson['_id']}}')">
+        {% else %}
+            <div class="mx-2 side box clickable blackbordered" py-click="openLesson('{{lesson['_id']}}')">
+        {% endif %}
                 <p></p>
                 <p class="center white-text">{{lesson["name"]}}</p>
                 <img src="static/thumbs-up.png" width="25px" height="25px" class="leftAlign side center">
@@ -64,7 +84,7 @@
         {% endfor %}
 
         <p></p>
-        <p>Made for the 2023 Congressional App Challenge</p>
+        <p class="ml-2">Made for the 2023 Congressional App Challenge</p>
 
     </body>
 

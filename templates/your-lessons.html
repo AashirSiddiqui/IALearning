@@ -2,6 +2,27 @@
 {% block title %} Your Lessons | IALearning {% endblock %}
 
 {% block body %}
+
+<div class="py-4 bg-dark text-white text-center mb-1">
+    <image src="static/icon.png" class=" mx-2 flex logo side"></image>
+    <h1 class="side center mx-2"><strong>IA Learning</strong></h1><br>
+    <p></p>
+    <div class="btn-group btn-group-toggle center mb-3" id="PageNavigator" data-toggle="buttons">
+        <label class="btn btn-info active ml-2" py-click="navigateToPage('/')">
+          <input type="radio" name="options" id="option1" autocomplete="off"> Home
+        </label>
+        <label class="btn btn-info" py-click="navigateToPage('/signup')">
+          <input type="radio" name="options" id="option2" autocomplete="off"> Sign In / Sign Up
+        </label>
+        <label class="btn btn-info">
+          <input type="radio" name="options" id="option3" autocomplete="off" checked> Your Lessons
+        </label>
+        {% if isAccount %}
+        <p class="mx-2 my-2">Welcome, <strong>{{ username }}</strong>!</p>
+        {% endif %}
+    </div>
+</div>
+
 <h2 class="mx-2">Your Lessons</h2>
 
 {% for lesson in lessons %}
@@ -26,7 +47,7 @@
 </a>
 {% endfor %}
 
-<p class="transparent" id="creatorId">{{lessons[0]["creator_id"]}}</p>
+<p class="transparent" id="creatorId">{{ makerId }}</p>
 
 <div>
     <p class="side mt-3 mx-2">Lesson Name: </p><input id="lessonName" class="mx-1 w-25 side form-control" type="text"><br>
@@ -46,6 +67,22 @@
                     window.location.href = "/lesson-editor?id="+data
                 }
         })
+    })
+    document.getElementsByClassName("delLesson").forEach(function(element){
+        element.addEventListener("click", function() {
+            console.log(this)
+            $.ajax({
+                    data:{
+                        "lesson-name":document.getElementById("lessonName").value,
+                        "lesson-creatorId": document.getElementById("creatorId").innerHTML
+                    },
+                    url:"/deletelesson",
+                    method:"POST",
+                    success: function(data) {
+                        window.location.href = "/lesson-editor?id="+data
+                    }
+            }) 
+    });
     })
 </script>
 

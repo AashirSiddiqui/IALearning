@@ -22,19 +22,31 @@ app = Flask((__name__))
 app.secret_key = os.environ.get("SECRET_KEY")
 app.config["SESSION_TYPE"] = "filesystem"
 
+@app.route("/landing", methods=["GET"])
+def lander():
+    return render_template("landing.html")
+
 @app.route("/", methods=["POST", "GET"])
 def mainpage():
     if request.method == "GET":
+        completedIds = []
+        if "lessonCompleted" in request.args and request.args["lessonCompleted"].strip() == "true":
+            lesson_id = request.args["lessonId"]
+            accounts.update_one({"username":session.get("username")}, {"$addToSet":{"lessons_completed_ids":lesson_id}})
         account_exists = False
         account_username = ""
         if session.get("username"):
             account_username = session.get("username")
+            completedIds = accounts.find_one({"username":session.get("username")})["lessons_completed_ids"]
+            print(completedIds)
             account_exists = True
-        return render_template("index.html", lessons=lessons.find({"published":True}), username=account_username, isAccount = account_exists)
+            return render_template("index.html", lessons=lessons.find({"published":True}), username=account_username, isAccount = account_exists, completedIds = list(completedIds))
+        else:
+            return render_template("redirect.html", page="/landing")
     elif request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        print(request.form)
+        #print(request.form)
         return {"success":True}
 
 @app.route("/home")
@@ -63,15 +75,15 @@ def signuppage():
         username = request.form["username"]
         password = request.form["password"]
         if accounts.count_documents({"username":username}, limit = 1) > 0:
-            print("exists")
+            #print("exists")
             return {"success":False, "message":"An account with that username already exists- please choose another username."}
         if " " in username:
             return {"success":False, "message":"Spaces aren't allowed in usernames."}
         else:
-            accounts.insert_one({"username":username, "password":password})
+            accounts.insert_one({"username":username, "password":password, "liked_lessons_ids":[], "lessons_completed_ids":[]})
         # return render_template("account-created.html")
         session["username"] = username
-        print(session["username"])
+        #print(session["username"])
         return {"success":True}
     
 @app.route("/signin", methods=["POST"])
@@ -93,8 +105,9 @@ def yourLessons():
     if session.get("username"):
         account = accounts.find_one({"username":session.get("username")})
         ownedLessons = list(lessons.find({"creator_id":account["_id"]}))
-        print(ownedLessons)
-        return render_template("your-lessons.html", lessons=ownedLessons)
+        makerID = account["_id"]
+        #print(ownedLessons)
+        return render_template("your-lessons.html", lessons=ownedLessons, makerId = makerID)
     else:
         return(render_template("redirect.html", page="signup"))
 
@@ -104,12 +117,12 @@ def lessonEditor():
         if session.get("username"):
             lessonId = request.args["id"]
             lesson = lessons.find_one({"_id":bson.objectid.ObjectId(lessonId)})
-            print(lesson)
+            #print(lesson)
             return render_template("lesson-editor.html", lesson=lesson["content"], lessonID=lessonId)
         else:
             return(render_template("redirect.html", page="signup"))
     else:
-        print(request.form.items)
+        #print(request.form.items)
         lessonID = request.form["lessonID"]
         lessonContent = request.form["lessonContent"]
         lesson = lessons.find_one({"_id":bson.objectid.ObjectId(lessonID)})
@@ -125,14 +138,39 @@ def redirectToLesson():
 def lessonpage():
     if session.get("username"):
         lessonId = request.args.get("id")
+        isPreview = request.args.get("preview")
         lesson = lessons.find_one({"_id":bson.objectid.ObjectId(lessonId)})
-        return render_template("lesson.html", lesson=json.dumps({"list":lesson["content"]}), lesson_name=lesson["name"])
+        return render_template("lesson.html", lesson=json.dumps({"list":lesson["content"]}), lesson_name=lesson["name"], preview=isPreview, lessonID = lessonId)
     else:
         return render_template("redirect.html", page="/signup")
+    
 @app.route("/submitlesson", methods=["POST", "GET"])
 def submitlesson():
     return json.dumps("hello")
 
+@app.route("/likelesson", methods=["POST"])
+def likeLesson():
+    lessonId = request.form["lessonID"]
+    if lessonId in accounts.find_one({"username":session.get("username")})["lessons_liked_ids"]:
+        return "already liked"
+    else:
+        print("liking lesson")
+        lessons.update_one({"_id":bson.objectid.ObjectId(lessonId)}, 
+                                    {"$inc":{"rating":1}})
+        accounts.update_one({"username":session.get("username")}, {"$addToSet":{"lessons_liked_ids":lessonId}})
+        return "success"
+
+@app.route("/deletelesson", methods=["POST"])
+def deletelesson():
+    lessonId = request.form["lessonID"]
+    lessons.delete_one({"_id":bson.objectid.ObjectId(lessonId)})
+    return "success"
+
+@app.route("/publish-lesson", methods=["POST"])
+def publishlesson():
+    lessonId = request.form["lessonID"]
+    publishLesson = lessons.update_one({"_id":bson.objectid.ObjectId(lessonId)}, {"$set":{"published":True}})
+    return "success"
 
 app.debug = True 
 

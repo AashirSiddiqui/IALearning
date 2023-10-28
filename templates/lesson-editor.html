@@ -2,6 +2,30 @@
 {% block title %} Lesson Editor | IALearning {% endblock %}
 
 {% block body %}
+
+<div class="py-4 bg-dark text-white text-center mb-1">
+    <image src="static/icon.png" class=" mx-2 flex logo side"></image>
+    <h1 class="side center mx-2"><strong>IA Learning</strong></h1><br>
+    <p></p>
+    <div class="btn-group btn-group-toggle center mb-3" id="PageNavigator" data-toggle="buttons">
+        <label class="btn btn-info ml-2" py-click="navigateToPage('/')">
+          <input type="radio" name="options" id="option1" autocomplete="off"> Home
+        </label>
+        <label class="btn btn-info" py-click="navigateToPage('/signup')">
+          <input type="radio" name="options" id="option2" autocomplete="off"> Sign In / Sign Up
+        </label>
+        <label class="btn btn-info" py-click="navigateToPage('/your-lessons')">
+          <input type="radio" name="options" id="option3" autocomplete="off"> Your Lessons
+        </label>
+        <label class="btn btn-info" py-click="navigateToPage('/syntax')">
+            <input type="radio" name="options" id="option4" autocomplete="off"> Lesson Syntax
+        </label>
+        {% if isAccount %}
+        <p class="mx-2 my-2">Welcome, <strong>{{ username }}</strong>!</p>
+        {% endif %}
+    </div>
+</div>
+
 <h2 class="mx-2">Lesson Editor</h2>
 
 <div>
@@ -16,8 +40,8 @@
 
 </div>
 
-<br>
-<select class="mx-2" name="widget" id="WidgetPicker">
+<hr class="my-4">
+<select class="mx-2 form-control w-25" name="widget" id="WidgetPicker">
     <option value="ID00">Text</option>
     <option value="ID01">Title</option>
     <option value="ID02">Pause</option>
@@ -29,10 +53,18 @@
     <option value="ID08">CheckboxQuiz</option>
     <option value="ID09">EntryQuiz</option>
 </select>
-<button id="CreateBtn" py-click="createWidget()" class="mx-2">Create</button>
-<p></p>
-<button id="SaveBtn" py-click="renderWidgets()" class="mx-2"><strong>Save</strong></button>
-<p></p>
+<br>
+<button id="CreateBtn" py-click="createWidget()" class="btn btn-primary mx-2">Create</button>
+<br><br>
+<a href="/lesson?id={{lessonID}}&preview=true" class="btn btn-dark">Preview Lesson</a>
+<br><br>
+<div class="text-center">
+    <button id="SaveBtn" py-click="renderWidgets()" class="mx-2 w-25 side btn btn-info"><strong>Save</strong></button>
+    <p></p>
+    <button id="PublishBtn" class="mx-2 w-25 side btn btn-success"><strong>Publish</strong></button>
+    <p></p>
+    <button id="DeleteBtn" class="mx-2 w-25 btn side btn-danger"><strong>Delete</strong></button>
+</div>
 <p class="transparent" id="DataString"></p>
 <p class="transparent" id="LessonID">{{ lessonID }}</p>
 
@@ -49,14 +81,47 @@
     })
 </script>
 
+<script>
+    document.getElementById("DeleteBtn").addEventListener("click", function() {
+        $.ajax({
+                data:{
+                    "lessonID":document.getElementById("LessonID").innerHTML
+                },
+                url:"/deletelesson",
+                method:"POST",
+                success: function(){
+                    window.location.href = "/index"
+                }
+        })
+    })
+</script>
+
+<script>
+    document.getElementById("PublishBtn").addEventListener("click", function() {
+        $.ajax({
+                data:{
+                    "lessonID":document.getElementById("LessonID").innerHTML
+                },
+                url:"/publish-lesson",
+                method:"POST",
+                success: function(){
+                    alert("Congratulations, your lesson has been published!")
+                }
+        })
+    })
+</script>
+
 <py-script>
-    from js import document
+    from js import document, window
 
     widgetsID = {"ID00":"text", "ID01":"title", "ID02":"pause", "ID03":"hint", "ID04":"slider", "ID05":"equation", "ID06":"numberEntry", "ID07":"radioQuiz", "ID08":"checkboxQuiz", "ID09":"entryQuiz"}
     elements = document.getElementsByClassName("LessonElement")
     mainDiv = document.getElementById("mainEditor")
     WidgetPicker = document.getElementById("WidgetPicker")
     plainWidgets = ["pause"]
+
+    def navigateToPage(page):
+        window.location.href = page
 
     lessonContent = []
     for i in elements:
@@ -81,7 +146,7 @@
         widgetCode = list(widgetCode)
         widgetCode[4:] = changedEntry.value
         code = "".join(widgetCode)
-        print(code)
+        #print(code)
         lessonContent[index] = code
         renderWidgets()
 
@@ -92,11 +157,11 @@
         for i in lessonContent:
             elementType = widgetsID[i[0:4]]
             rest = i[4:]
-            print(elementType)
-            print(rest)
+            #print(elementType)
+            #print(rest)
             widgetLabel = document.createElement("p")
             widgetLabel.innerHTML = "<strong>"+elementType.title() + "</strong> Widget"
-            widgetLabel.setAttribute("class", "mt-3 mx-2")
+            widgetLabel.setAttribute("class", "mt-3 mx-2 side")
             mainDiv.appendChild(widgetLabel)
             if elementType not in plainWidgets:
                 entry = document.createElement("input")
@@ -104,13 +169,14 @@
                 entry.setAttribute("id", "Entry"+str(v))
                 entry.setAttribute("py-change", "saveWidget('Entry"+str(v)+"')")
                 entry.value = rest
+                mainDiv.appendChild(document.createElement("br"))
                 mainDiv.appendChild(entry)
             delButton = document.createElement("button")
             delButton.innerHTML = "Delete"
-            delButton.setAttribute("class", "side mx-2")
+            delButton.setAttribute("class", "side mx-2 btn btn-danger")
             delButton.setAttribute("py-click", "deleteWidget("+str(v)+")")
             mainDiv.appendChild(delButton)
-            mainDiv.appendChild(document.createElement("break"))
+            mainDiv.appendChild(document.createElement("br"))
             v += 1
         document.getElementById("DataString").innerHTML = str(lessonContent)
     

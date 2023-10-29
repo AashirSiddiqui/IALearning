@@ -62,8 +62,8 @@
         </form> -->
 
         {% for lesson in lessons %}
-        {% if lesson['_id'] in completedIds %}
-            <div class="mx-2 side box clickable blackbordered greenBackground" py-click="openLesson('{{lesson['_id']}}')">
+        {% if lesson['_id']|string in completedIds %}
+            <div class="mx-2 side box bordered5 greenBackground" py-click="openLesson('{{lesson['_id']}}')">
         {% else %}
             <div class="mx-2 side box clickable blackbordered" py-click="openLesson('{{lesson['_id']}}')">
         {% endif %}

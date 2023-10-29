@@ -8,8 +8,7 @@
     <head>
         <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
         <link rel="stylesheet" href="static/style.css" />
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <script defer src="https://pyscript.net/latest/pyscript.js"></script>
         <py-config>
             [splashscreen]
@@ -17,6 +16,14 @@
             terminal = false
             docked = false
         </py-config>
+        <style>
+            #lesson {
+                font-family: Garamond, serif;
+            }
+            p {
+                font-size: 18px;
+            }
+        </style>
     </head>
 
     <body>
@@ -48,10 +55,10 @@
 
         <h1 class="center">{{lesson_name}}</h1>
         <div class="center">
-            <button id="start_button" class="bigButton" py-click="on_start()" disabled>Start</button>
+            <button id="start_button" class="bigButton btn btn-success" py-click="on_start()" disabled>Start</button>
         </div>
 
-        <div id="lesson" class="center">
+        <div id="lesson" class="center w-50">
 
             <p hidden id="lessonContent">
 
@@ -121,7 +128,7 @@
             <p></p>
             <div id = "numberEntry template" hidden class = 'bordered center entry'>
                 <p class = "italic small">(aa)</p>
-                <input type="number" class="center">
+                <input type="number" class="form-control w-75 center">
             </div>
 
             <div id = "answerTemp" hidden class = "center" style="width: 50%;">
@@ -155,9 +162,9 @@
                 #    "ID00Area is the size of a two dimensional polygon, measured in square units.",
                 #    "ID00To get the area of a rectangle, simply multiply the length and the width together. For example, if there is a rectangle with a length of 3 and a width of 2, its area will be 3 * 2, which equals 6.",
                 #    "ID03Try rereading the text.",
-                #    "ID04xx1,25",
-                #    "ID04yy1,25",
-                #    "ID05xx / yy"
+                #    "ID04x1,25",
+                #    "ID04y1,25",
+                #    "ID05x / y"
                 #    ]
                 textContent = json.loads(document.getElementById("lessonContent").innerHTML)["list"]
                 #print(textContent)
@@ -298,7 +305,7 @@
                         if float(slider.lastElementChild.value) > int(slider.lastElementChild.getAttribute("max")):
                             slider.lastElementChild.value = slider.lastElementChild.getAttribute("max")
                         elif float(slider.lastElementChild.value) < int(slider.lastElementChild.getAttribute("min")):
-                            slider.lastElementChild.value = sldier.lastElementChild.getAttribute("min")
+                            slider.lastElementChild.value = slider.lastElementChild.getAttribute("min")
                     values[valueid] = slider.lastElementChild.value
                     slider.firstElementChild.innerHTML = "("+str(valueid)+") " + str(values[valueid])
                     present = []
@@ -358,6 +365,7 @@
                             current_index = v
                             nextBtn = document.createElement('button')
                             nextBtn.innerHTML = "Continue"
+                            nextBtn.setAttribute("class", "btn btn-primary")
                             nextBtn.setAttribute('py-click', 'continue_btn()')
                             lessonDiv.element.append(nextBtn)
                             clicked_button = nextBtn
@@ -376,7 +384,7 @@
                             document.getElementById("Hint "+str(current_id-1)).lastElementChild.innerHTML = i[1]
                             #print(newHint.lastElementChild.innerHTML)
                         if i[0] == "slider":
-                            id = i[1][0:2]
+                            id = i[1][0:1]
                             #print(id)
                             i[1] = i[1].replace(id, "")
                             #print(i[1])
@@ -406,7 +414,7 @@
                             parsedEquation = i[1].split(" ")
                             equations[i[1]] = dict.fromkeys(parsedEquation, parsedEquation)
                         if i[0] == "numberEntry":
-                            id = i[1][0:2]
+                            id = i[1][0:1]
                             i[1] = i[1].replace(id, "")
                             ranges = i[1].split(",")
                             newEntry = numberEntryTemp.cloneNode(deep=True)

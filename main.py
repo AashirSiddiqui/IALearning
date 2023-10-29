@@ -49,6 +49,10 @@ def mainpage():
         #print(request.form)
         return {"success":True}
 
+@app.route("/syntax")
+def syntaxpage():
+    return render_template("lesson-syntax.html")
+
 @app.route("/home")
 def accountpage():
     return render_template("redirect.html", page="/")

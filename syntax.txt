@@ -1,4 +1,18 @@
-ID05 - Equation
-    Example: ID05xx * 7
-    xx = variable name
-    "xx * 7" is the equation. all arguments in the equation must be separated by spaces.
+Equation
+    Example: ID05x * 7
+    x = variable name
+    "x * 7" is the equation. All arguments in the equation must be separated by spaces.
+
+Text
+    The Text widget creates a standard paragraph text.
+    For the text widget, the only thing that is needed is the text. Create a text widget using the Create slider and Create button, and just input the text into the entry that appears.
+
+Title
+    The Title widget creates a strong text.
+    For the title widget, the only thing that is needed is the text. Create a title widget using the Create slider and Create button, and just input the text into the entry that appears.
+
+Hint
+    The Hint widget creates a button that, when clicked, reveals a hint.
+    Simply input the hint text into the entry that appears after creating the widget.
+
+Sl

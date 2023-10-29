@@ -3,7 +3,36 @@
 
 {% block body %}
 
-<div class="sidenav">
+<div class="py-4 bg-dark text-white text-center mb-1">
+    <image src="static/icon.png" class=" mx-2 flex logo side"></image>
+    <h1 class="side center mx-2"><strong>IA Learning</strong></h1><br>
+    <p></p>
+    <div class="btn-group btn-group-toggle center mb-3" id="PageNavigator" data-toggle="buttons">
+        <label class="btn btn-info ml-2" py-click="navigateToPage('/')">
+          <input type="radio" name="options" id="option1" autocomplete="off"> Home
+        </label>
+        <label class="btn btn-info" py-click="navigateToPage('/signup')">
+          <input type="radio" name="options" id="option2" autocomplete="off"> Sign In / Sign Up
+        </label>
+        <label class="btn btn-info" py-click="navigateToPage('/your-lessons')">
+          <input type="radio" name="options" id="option3" autocomplete="off" checked> Your Lessons
+        </label>
+        <label class="btn btn-info active">
+            <input type="radio" name="options" id="option4" autocomplete="off" checked> Lesson Syntax
+        </label>
+        {% if isAccount %}
+        <p class="mx-2 my-2">Welcome, <strong>{{ username }}</strong>!</p>
+        {% endif %}
+    </div>
+</div>
+
+<py-script>
+    from js import window
+    def navigateToPage(page):
+        window.location.href = page
+</py-script>
+
+<div class="sidenav border border-size border-info rounded bg-dark">
     <a href="#text">Text</a>
     <a href="#title">Title</a>
     <a href="#pause">Pause</a>
@@ -16,4 +45,79 @@
     <a href="#entryQuiz">EntryQuiz</a>
 </div>
 
+<div class="main">
+    <strong>When using the syntax, remember not to include the curly braces ({}) in your code.</strong>
+    <div id="text">
+        <h4>Text</h4>
+        The Text widget creates a standard paragraph text. <br><br>
+        For the text widget, the only thing that is needed is the text. Create a text widget using the Create slider and Create button, and just input the text into the entry that appears.
+        <p></p>
+    </div>
+    <div id="title">
+        <h4>Title</h4>
+        The Title widget creates a strong text. <br><br>
+        For the title widget, the only thing that is needed is the text. Create a title widget using the Create slider and Create button, and just input the text into the entry that appears.
+    <p></p>
+    </div>
+    <div id="pause">
+        <h4>Pause</h4>
+        The Pause widget prompts the user to click 'Continue' before continuing the text. <br><br>
+        For the pause widget, no code is needed. Just make the widget and leave it.
+    <p></p>
+    </div>
+    <div id="hint">
+        <h4>Hint</h4>
+        The Hint widget creates a button that, when clicked, reveals a hint. <br> <br>
+        Simply input the hint text into the entry that appears after creating the widget.    
+        <p></p>
+    </div>
+    <div id="slider">
+        <h4>Slider</h4>
+        The Slider widget lets the user change the value of a variable using a slider to see how it affects an equation. <br>
+        <p>The slider widget code takes in a variable name and a minimum and maximum value.</p>
+        {varname(oneletter)}{minimumValue},{maximumValue}
+        Example: x1,25
+        <p></p>
+    </div>
+    <div id="equation">
+        <h4>Equation</h4>
+        The Equation widgets lets the user see how different values of variables affect an equation. <br> <br>
+        <p>The equation widget code takes in just one parameter: the equation, with all operators and variables separated by spaces.</p>
+        Example: x * 2
+        Note on the example: For the above example to work, you must have either a NumberEntry widget or a Slider widget with the variable name of x.
+        <p></p>
+    </div>
+    <div id="numberEntry">
+        <h4>NumberEntry</h4>
+        The NumberEntry widget lets the user change the value of a variable using an Entry to see how it affects an equation.
+        <p>The NumberEntry takes in the same parameters as the Slider (see above). The example for the slider also works for the NumberEntry.</p>
+        <p></p>
+    </div>
+    <div id="radioQuiz">
+        <h4>RadioQuiz</h4>
+        The RadioQuiz widget prompts the user to respond to a question by checking one radio button. 
+        <br> <br>
+        The code for a RadioQuiz takes in the correct answer's index, the question, and all the options.
+        _{correctIndex}|{question}|{option0}|{option1} 
+        You can have as many options as you want, just separate them by bars (|).
+        <p></p>
+    </div>
+    <div id="checkboxQuiz">
+        <h4>CheckboxQuiz</h4>
+        The CheckboxQuiz widget prompts the user to respond to a question by checking any number of boxes. The quiz will say that the user is correct if they select all the correct indexes.
+        <br> <br>
+        The code for a CheckboxQuiz takes in the correct answers' indexes, the question, and all the options.
+        _{correctIndex1}+{correctingIndex2}|{question}|{option0}|{option1} 
+        You can have as many options as you want, just separate them by bars (|). You can also have as many correct indexes as you want, just separate them by plus signs (+).
+        <p></p>
+    </div>
+    <div id="entryQuiz">
+        <h4>EntryQuiz</h4>
+        The EntryQuiz widget prompts the user to respond to a question by entering in a response.
+        <br> <br>
+        The code for an EntryQuiz takes in just the correct answer and the question.
+        _{answer}|{question}
+        <p></p>
+    </div>
+</div>
 {% endblock %}

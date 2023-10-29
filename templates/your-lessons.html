@@ -8,13 +8,13 @@
     <h1 class="side center mx-2"><strong>IA Learning</strong></h1><br>
     <p></p>
     <div class="btn-group btn-group-toggle center mb-3" id="PageNavigator" data-toggle="buttons">
-        <label class="btn btn-info active ml-2" py-click="navigateToPage('/')">
+        <label class="btn btn-info ml-2" py-click="navigateToPage('/')">
           <input type="radio" name="options" id="option1" autocomplete="off"> Home
         </label>
         <label class="btn btn-info" py-click="navigateToPage('/signup')">
           <input type="radio" name="options" id="option2" autocomplete="off"> Sign In / Sign Up
         </label>
-        <label class="btn btn-info">
+        <label class="btn btn-info active">
           <input type="radio" name="options" id="option3" autocomplete="off" checked> Your Lessons
         </label>
         {% if isAccount %}
@@ -22,6 +22,12 @@
         {% endif %}
     </div>
 </div>
+
+<py-script>
+    from js import window
+    def navigateToPage(page):
+        window.location.href = page
+</py-script>
 
 <h2 class="mx-2">Your Lessons</h2>
 
@@ -51,7 +57,7 @@
 
 <div>
     <p class="side mt-3 mx-2">Lesson Name: </p><input id="lessonName" class="mx-1 w-25 side form-control" type="text"><br>
-    <button id="createLesson" class="mx-2">Create Lesson</button>
+    <button id="createLesson" class="mx-2 btn btn-success">Create Lesson</button>
 </div>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script>

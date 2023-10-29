@@ -55,15 +55,16 @@
 </select>
 <br>
 <button id="CreateBtn" py-click="createWidget()" class="btn btn-primary mx-2">Create</button>
-<br><br>
-<a href="/lesson?id={{lessonID}}&preview=true" class="btn btn-dark">Preview Lesson</a>
+<hr>
 <br><br>
 <div class="text-center">
-    <button id="SaveBtn" py-click="renderWidgets()" class="mx-2 w-25 side btn btn-info"><strong>Save</strong></button>
+    <a href="/lesson?id={{lessonID}}&preview=true" class="btn btn-dark mx-2">Preview Lesson</a>
     <p></p>
-    <button id="PublishBtn" class="mx-2 w-25 side btn btn-success"><strong>Publish</strong></button>
+    <button id="SaveBtn" py-click="renderWidgets()" class="mx-2 w-25 side btn btn-info"><strong>Save Lesson</strong></button>
     <p></p>
-    <button id="DeleteBtn" class="mx-2 w-25 btn side btn-danger"><strong>Delete</strong></button>
+    <button id="PublishBtn" class="mx-2 w-25 side btn btn-success"><strong>Publish Lesson</strong></button>
+    <p></p>
+    <button id="DeleteBtn" class="mx-2 w-25 btn side btn-danger"><strong>Delete Lesson</strong></button>
 </div>
 <p class="transparent" id="DataString"></p>
 <p class="transparent" id="LessonID">{{ lessonID }}</p>

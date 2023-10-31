@@ -61,6 +61,8 @@
             <button type="submit">Test Lesson</button>
         </form> -->
 
+        <p class="ml-2">Email info@ialearn.net for bugs and queries</p>
+
         {% for lesson in lessons %}
         {% if lesson['_id']|string in completedIds %}
             <div class="mx-2 side box bordered5 greenBackground" py-click="openLesson('{{lesson['_id']}}')">

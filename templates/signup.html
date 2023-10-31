@@ -18,7 +18,7 @@
 
 </head>
 
-<body>
+<body class="bg-light">
 
     <div class="py-4 bg-dark text-white text-center mb-1">
         <image src="static/icon.png" class=" mx-2 flex logo side"></image>
@@ -36,17 +36,18 @@
             {% endif %}
         </div>
     </div>
-
-    <h2 class="center mt-3">Register & Sign In</h2>
-    <p></p>
-    <p id="message" class="center"></p>
-    <p></p>
-    <form class="text-center">
-        <input type="text" class="form-control w-25 mx-auto" name="username" id="username" placeholder="Username"><br>
-        <input type="text" name="password" class="form-control w-25 mx-auto" id="password" placeholder="Password"><br>
-        <button name="SignUp" class="side" type="button" id="signUpBtn">Register</button>
-        <button type="button" class="side" name="LogIn" id="logInBtn">Sign In</button>
-    </form>
+    <div class="">
+        <h2 class="center mt-3">Register & Sign In</h2>
+        <p></p>
+        <p id="message" class="center"></p>
+        <p></p>
+        <form class="text-center">
+            <input type="text" class="form-control w-25 mx-auto" name="username" id="username" placeholder="Username">
+            <input type="password" name="password" class="form-control w-25 mx-auto mb-3" id="password" placeholder="Password">
+            <button name="SignUp" class="side btn btn-primary" type="button" id="signUpBtn">Register</button>
+            <button type="button" class="side btn btn-primary" name="LogIn" id="logInBtn">Sign In</button>
+        </form>
+    </div>
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script>

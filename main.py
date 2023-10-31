@@ -15,8 +15,6 @@ db = client.IALearning
 accounts = db.Accounts
 lessons = db.Lessons
 
-print(accounts, lessons)
-
 app = Flask((__name__))
 
 app.secret_key = os.environ.get("SECRET_KEY")
@@ -38,7 +36,6 @@ def mainpage():
         if session.get("username"):
             account_username = session.get("username")
             completedIds = accounts.find_one({"username":session.get("username")})["lessons_completed_ids"]
-            print(completedIds)
             account_exists = True
             return render_template("index.html", lessons=lessons.find({"published":True}), username=account_username, isAccount = account_exists, completedIds = list(completedIds))
         else:
@@ -46,7 +43,6 @@ def mainpage():
     elif request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        #print(request.form)
         return {"success":True}
 
 @app.route("/syntax")
@@ -59,17 +55,20 @@ def accountpage():
 
 @app.route("/makelesson", methods=["POST"])
 def makeLesson():
-    lessonName = request.form["lesson-name"]
-    creatorId = request.form["lesson-creatorId"]
-    newLsn = lessons.insert_one({
-        "name":lessonName,
-        "creator_id":bson.objectid.ObjectId(creatorId),
-        "content":[],
-        "rating":0,
-        "verified":False,
-        "published":False
-    })
-    return str(newLsn.inserted_id)
+    if session.get("username"):
+        lessonName = request.form["lesson-name"]
+        creatorId = request.form["lesson-creatorId"]
+        newLsn = lessons.insert_one({
+            "name":lessonName,
+            "creator_id":bson.objectid.ObjectId(creatorId),
+            "content":[],
+            "rating":0,
+            "verified":False,
+            "published":False
+        })
+        return str(newLsn.inserted_id)
+    else:
+        return "error"
 
 @app.route("/signup", methods=["POST", "GET"])
 def signuppage():
@@ -127,12 +126,15 @@ def lessonEditor():
             return(render_template("redirect.html", page="signup"))
     else:
         #print(request.form.items)
-        lessonID = request.form["lessonID"]
-        lessonContent = request.form["lessonContent"]
-        lesson = lessons.find_one({"_id":bson.objectid.ObjectId(lessonID)})
-        lesson["content"] = eval(lessonContent)
-        lessons.update_one({"_id":lesson["_id"]}, {"$set": {"content":eval(lessonContent)}})
-        return "success"
+        if session.get("username"):
+            lessonID = request.form["lessonID"]
+            lessonContent = request.form["lessonContent"]
+            lesson = lessons.find_one({"_id":bson.objectid.ObjectId(lessonID)})
+            lesson["content"] = eval(lessonContent)
+            lessons.update_one({"_id":lesson["_id"]}, {"$set": {"content":eval(lessonContent)}})
+            return "success"
+        else:
+            return "error"
 
 @app.route("/lesson.html")
 def redirectToLesson():
@@ -154,29 +156,35 @@ def submitlesson():
 
 @app.route("/likelesson", methods=["POST"])
 def likeLesson():
-    lessonId = request.form["lessonID"]
-    if lessonId in accounts.find_one({"username":session.get("username")})["lessons_liked_ids"]:
-        return "already liked"
+    if session.get("username"):
+        lessonId = request.form["lessonID"]
+        if lessonId in accounts.find_one({"username":session.get("username")})["lessons_liked_ids"]:
+            return "already liked"
+        else:
+            lessons.update_one({"_id":bson.objectid.ObjectId(lessonId)}, 
+                                        {"$inc":{"rating":1}})
+            accounts.update_one({"username":session.get("username")}, {"$addToSet":{"lessons_liked_ids":lessonId}})
+            return "success"
     else:
-        print("liking lesson")
-        lessons.update_one({"_id":bson.objectid.ObjectId(lessonId)}, 
-                                    {"$inc":{"rating":1}})
-        accounts.update_one({"username":session.get("username")}, {"$addToSet":{"lessons_liked_ids":lessonId}})
-        return "success"
+        return "error"
 
 @app.route("/deletelesson", methods=["POST"])
 def deletelesson():
-    lessonId = request.form["lessonID"]
-    lessons.delete_one({"_id":bson.objectid.ObjectId(lessonId)})
-    return "success"
+    if session.get("username"):
+        lessonId = request.form["lessonID"]
+        lessons.delete_one({"_id":bson.objectid.ObjectId(lessonId)})
+        return "success"
+    else:
+        return "error"
 
 @app.route("/publish-lesson", methods=["POST"])
 def publishlesson():
-    lessonId = request.form["lessonID"]
-    publishLesson = lessons.update_one({"_id":bson.objectid.ObjectId(lessonId)}, {"$set":{"published":True}})
-    return "success"
-
-app.debug = True 
+    if session.get("username"):
+        lessonId = request.form["lessonID"]
+        publishLesson = lessons.update_one({"_id":bson.objectid.ObjectId(lessonId)}, {"$set":{"published":True}})
+        return "success"
+    else:
+        return "error"
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0")

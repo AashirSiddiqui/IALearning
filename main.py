@@ -83,7 +83,7 @@ def signuppage():
         if " " in username:
             return {"success":False, "message":"Spaces aren't allowed in usernames."}
         else:
-            accounts.insert_one({"username":username, "password":password, "liked_lessons_ids":[], "lessons_completed_ids":[]})
+            accounts.insert_one({"username":username, "password":password, "lessons_liked_ids":[], "lessons_completed_ids":[]})
         # return render_template("account-created.html")
         session["username"] = username
         #print(session["username"])
